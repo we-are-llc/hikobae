@@ -41,8 +41,7 @@ export default function Home({ onNavigate }) {
     <div className="home">
       <div className="home-logo">🌱</div>
       <div style={{ textAlign: 'center' }}>
-        <div className="home-title">ひこばえ</div>
-        <div className="home-subtitle">こたえを かこう</div>
+        <div className="home-title">ひこばえ</div>        
       </div>
 
       <div className="home-buttons">
