@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ひこばえ - 学習支援WEBアプリ</title>
+<style>
+body {
+    margin: 0;
+    font-family: "Noto Sans JP", sans-serif;
+    line-height: 1.7;
+    color: #333;
+    background: #f9fafb;
+}
+
+header {
+    background: linear-gradient(135deg, #6bbf7a, #4ca96a);
+    color: white;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+header p {
+    margin-top: 15px;
+    font-size: 1.1rem;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 40px 20px;
+}
+
+.section {
+    margin-bottom: 60px;
+}
+
+.section h2 {
+    border-left: 6px solid #6bbf7a;
+    padding-left: 12px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 600px) {
+    .features {
+        grid-template-columns: 1fr;
+    }
+}
+
+.feature-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.cta {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.cta a {
+    display: inline-block;
+    background: #4ca96a;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: 0.3s;
+}
+
+.cta a:hover {
+    background: #3e8f59;
+}
+
+footer {
+    text-align: center;
+    padding: 30px 10px;
+    font-size: 0.9rem;
+    color: #666;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>ひこばえ</h1>
+    <p>書くことが苦手な子どもたちのための学習支援WEBアプリ</p>
+</header>
+
+<div class="container">
+
+    <div class="section">
+        <h2>ひこばえとは</h2>
+        <p>
+            ひこばえは、書字が苦手なASDのお子さんでも<br>
+            自分の力で「考える学び」を続けられるように設計されたWEBアプリです。<br><br>
+            問題用紙をスキャンし、解答を音声で入力することで、<br>
+            「書けない」ことによる負担を軽減します。
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>主な機能</h2>
+        <div class="features">
+            <div class="feature-box">
+                <strong>問題用紙スキャン</strong><br>
+                スマホで撮影するだけで取り込み可能
+            </div>
+            <div class="feature-box">
+                <strong>台形補正</strong><br>
+                傾いた画像も自動で見やすく補正
+            </div>
+            <div class="feature-box">
+                <strong>解答欄追加</strong><br>
+                画面をタップして自由に配置
+            </div>
+            <div class="feature-box">
+                <strong>音声入力</strong><br>
+                書かずに「話して答える」
+            </div>
+            <div class="feature-box">
+                <strong>PDF保存</strong><br>
+                解答をまとめて書類化
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>開発の背景</h2>
+        <p>
+            書くことが苦手なだけで、<br>
+            本来の理解力や思考力が発揮できない――<br><br>
+            そんな子どもたちのもどかしさを減らしたいという想いから生まれました。<br><br>
+            「書くこと」ではなく「考えること」に集中できる環境を提供します。
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>名前に込めた意味</h2>
+        <p>
+            ひこばえとは、切り株や傷のあとから芽吹く若芽のこと。<br><br>
+            くじけたり、あきらめかけたりしても、<br>
+            思いがけない場所からまた芽が出て、強く育っていく。<br><br>
+            そんな子どもたちの姿に願いを込めて名付けました。
+        </p>
+    </div>
+
+    <div class="cta">
+        <a href="https://hikobae.we-re.net/" target="_blank" rel="noopener noreferrer">
+            ひこばえを使ってみる
+        </a>
+    </div>
+
+</div>
+
+<footer>
+    © ひこばえ / Hikobae
+</footer>
+
+</body>
+</html>

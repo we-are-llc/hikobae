@@ -77,9 +77,9 @@ export default function Home({ onNavigate }) {
         </div>
       )}
 
-      <button className="home-about-link" onClick={() => onNavigate('about')}>
+      <a className="home-about-link" href="/lp.html" target="_blank" rel="noopener noreferrer">
         このアプリについて
-      </button>
+      </a>
 
       {showSessions && (
         <div className="sessions-modal-overlay" onClick={() => setShowSessions(false)}>
