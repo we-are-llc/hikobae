@@ -1,6 +1,6 @@
 const MODES = [
-  { id: 'place', label: '配置', icon: '✏️', hint: '画像をタップして回答欄をつくる・動かす・削除する' },
-  { id: 'answer', label: '解答', icon: '🎙', hint: '回答欄をタップして音声入力する' },
+  { id: 'place', label: 'ばしょをつくる', icon: '✏️', hint: '画像をタップして回答欄をつくる・動かす・削除する' },
+  { id: 'answer', label: 'こたえをいれる', icon: '🎙', hint: '回答欄をタップして音声入力する' },
 ];
 
 export default function ModeBar({ mode, onChange }) {
