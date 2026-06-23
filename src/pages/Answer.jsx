@@ -17,30 +17,35 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   const [selectedBoxId, setSelectedBoxId] = useState(null);
   const [voiceBoxId, setVoiceBoxId] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const overlayRef = useRef(null);
   const saveTimerRef = useRef(null);
+  const sessionRef = useRef(session);
+  const prevAnsweredRef = useRef(0);
+  useEffect(() => { sessionRef.current = session; }, [session]);
 
   const currentPage = session.pages[pageIndex];
   const boxes = currentPage?.boxes ?? [];
 
+  // Functional update avoids stale-closure overwrites when answers are confirmed in quick succession
   const updateSession = useCallback(
     (updater) => {
-      const next = {
-        ...session,
-        pages: session.pages.map((p, i) =>
+      onUpdate((prev) => ({
+        ...prev,
+        pages: prev.pages.map((p, i) =>
           i === pageIndex ? { ...p, ...updater(p) } : p
         ),
-      };
-      onUpdate(next);
+        updatedAt: Date.now(),
+      }));
 
       clearTimeout(saveTimerRef.current);
       saveTimerRef.current = setTimeout(async () => {
         setSaving(true);
-        await saveSession(next).catch(console.error);
+        await saveSession(sessionRef.current).catch(console.error);
         setSaving(false);
       }, 800);
     },
-    [session, pageIndex, onUpdate]
+    [pageIndex, onUpdate]
   );
 
   useEffect(() => () => clearTimeout(saveTimerRef.current), []);
@@ -64,6 +69,8 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         width: DEFAULT_BOX_W,
         height: DEFAULT_BOX_H,
         text: '',
+        fontSize: 14,
+        color: 'green',
       };
 
       updateSession((p) => ({ boxes: [...p.boxes, newBox] }));
@@ -110,6 +117,15 @@ export default function Answer({ session, onNavigate, onUpdate }) {
     0
   );
   const totalBoxes = session.pages.reduce((acc, p) => acc + p.boxes.length, 0);
+
+  useEffect(() => {
+    if (totalBoxes > 0 && totalAnswered === totalBoxes && prevAnsweredRef.current < totalBoxes) {
+      setShowCelebration(true);
+      const t = setTimeout(() => setShowCelebration(false), 2500);
+      return () => clearTimeout(t);
+    }
+    prevAnsweredRef.current = totalAnswered;
+  }, [totalAnswered, totalBoxes]);
 
   return (
     <div className="answer-page">
@@ -202,7 +218,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         <div className="answer-footer-spacer" />
         <button
           className="btn-green"
-          onClick={() => onNavigate('confirm', session)}
+          onClick={() => onNavigate('confirm', sessionRef.current)}
           disabled={totalBoxes === 0}
         >
           かくにん・しゅつりょく →
@@ -216,6 +232,14 @@ export default function Answer({ session, onNavigate, onUpdate }) {
           onConfirm={handleVoiceConfirm}
           onClose={() => setVoiceBoxId(null)}
         />
+      )}
+
+      {/* Celebration overlay */}
+      {showCelebration && (
+        <div className="celebration-overlay" onClick={() => setShowCelebration(false)}>
+          <div className="celebration-mark">◎</div>
+          <div className="celebration-text">ぜんぶ こたえた！</div>
+        </div>
       )}
     </div>
   );

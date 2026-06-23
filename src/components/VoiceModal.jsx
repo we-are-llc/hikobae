@@ -44,6 +44,14 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
     setPhase('edit');
   }, [stop]);
 
+  const handleReadAloud = useCallback(() => {
+    if (!editText || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(editText);
+    utter.lang = 'ja-JP';
+    window.speechSynthesis.speak(utter);
+  }, [editText]);
+
   return (
     <div className="voice-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="voice-modal">
@@ -99,6 +107,9 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
               <button className="btn-ghost" onClick={handleEdit}>
                 てで なおす
               </button>
+              <button className="btn-ghost" onClick={handleReadAloud} disabled={!editText}>
+                🔊 よんで
+              </button>
               <button
                 className="btn-green"
                 onClick={handleConfirm}
@@ -123,6 +134,9 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
             <div className="voice-actions">
               <button className="btn-secondary" onClick={() => setPhase('voice')}>
                 もどる
+              </button>
+              <button className="btn-ghost" onClick={handleReadAloud} disabled={!editText}>
+                🔊 よんで
               </button>
               <button
                 className="btn-green"

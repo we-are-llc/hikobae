@@ -2,6 +2,14 @@ import { useCallback, useRef } from 'react';
 
 const MIN_SIZE = 0.02;
 
+const COLOR_PALETTE = {
+  green:  { main: '#10B981', bg: 'rgba(16,185,129,0.09)' },
+  blue:   { main: '#3B82F6', bg: 'rgba(59,130,246,0.09)' },
+  pink:   { main: '#EC4899', bg: 'rgba(236,72,153,0.09)' },
+  yellow: { main: '#EAB308', bg: 'rgba(234,179,8,0.09)' },
+};
+const COLOR_KEYS = ['green', 'blue', 'pink', 'yellow'];
+
 const HANDLES = [
   { id: 'nw', style: { top: -6, left: -6 }, cursor: 'nw-resize' },
   { id: 'n',  style: { top: -6, left: 'calc(50% - 6px)' }, cursor: 'n-resize' },
@@ -132,6 +140,8 @@ export default function AnswerBox({
     [box.id, onDelete]
   );
 
+  const palette = COLOR_PALETTE[box.color] || COLOR_PALETTE.green;
+
   const colors = {
     place: {
       border: '2px dashed #3B82F6',
@@ -139,16 +149,16 @@ export default function AnswerBox({
       labelBg: '#3B82F6',
     },
     answer: {
-      border: `2px solid ${box.text ? '#10B981' : '#94A3B8'}`,
-      background: box.text ? 'rgba(16,185,129,0.09)' : 'rgba(255,255,255,0.75)',
+      border: `2px solid ${box.text ? palette.main : '#94A3B8'}`,
+      background: box.text ? palette.bg : 'rgba(255,255,255,0.75)',
       cursor: 'pointer',
-      labelBg: '#10B981',
+      labelBg: palette.main,
     },
     edit: {
-      border: isSelected ? '2px solid #F59E0B' : '2px dashed #CBD5E1',
-      background: isSelected ? 'rgba(245,158,11,0.06)' : 'rgba(255,255,255,0.55)',
+      border: isSelected ? `2px solid ${palette.main}` : `2px dashed ${palette.main}`,
+      background: palette.bg,
       cursor: 'move',
-      labelBg: '#F59E0B',
+      labelBg: palette.main,
     },
   };
 
@@ -179,7 +189,7 @@ export default function AnswerBox({
 
       {/* Content */}
       {box.text ? (
-        <span className="answer-box-text">{box.text}</span>
+        <span className="answer-box-text" style={{ fontSize: box.fontSize || 14 }}>{box.text}</span>
       ) : (
         mode === 'answer' && (
           <span className="answer-box-placeholder">タップ</span>
@@ -197,6 +207,45 @@ export default function AnswerBox({
           >
             ×
           </button>
+          <div className="box-fontsize-controls">
+            <button
+              className="box-fontsize-btn"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpdate({ ...box, fontSize: Math.max(8, (box.fontSize || 14) - 2) });
+              }}
+              aria-label="文字を小さく"
+            >
+              ぁ
+            </button>
+            <button
+              className="box-fontsize-btn"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpdate({ ...box, fontSize: Math.min(36, (box.fontSize || 14) + 2) });
+              }}
+              aria-label="文字を大きく"
+            >
+              あ
+            </button>
+          </div>
+          <div className="box-color-controls">
+            {COLOR_KEYS.map((key) => (
+              <button
+                key={key}
+                className={`box-color-btn${(box.color || 'green') === key ? ' active' : ''}`}
+                style={{ background: COLOR_PALETTE[key].main }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUpdate({ ...box, color: key });
+                }}
+                aria-label={key}
+              />
+            ))}
+          </div>
           {HANDLES.map((h) => (
             <div
               key={h.id}

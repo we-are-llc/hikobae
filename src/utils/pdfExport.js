@@ -35,6 +35,13 @@ export async function exportToPDF(session) {
   pdf.save(`${session.name || 'こたえ'}_${date}.pdf`);
 }
 
+const PDF_COLOR_MAP = {
+  green:  'rgba(16,185,129,0.5)',
+  blue:   'rgba(59,130,246,0.5)',
+  pink:   'rgba(236,72,153,0.5)',
+  yellow: 'rgba(234,179,8,0.5)',
+};
+
 function buildRenderWrapper(page) {
   const wrapper = document.createElement('div');
   wrapper.style.cssText =
@@ -49,7 +56,7 @@ function buildRenderWrapper(page) {
   img.crossOrigin = 'anonymous';
 
   const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:absolute;inset:0;pointer-events:none;';
+  overlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
 
   for (const box of page.boxes) {
     if (!box.text) continue;
@@ -60,17 +67,16 @@ function buildRenderWrapper(page) {
       `top:${box.y * 100}%`,
       `width:${box.width * 100}%`,
       `height:${box.height * 100}%`,
-      `display:flex`,
-      `align-items:flex-start`,
       `padding:2px 5px`,
-      `font-size:13px`,
+      `font-size:${box.fontSize || 13}px`,
       `font-family:-apple-system,'Hiragino Kaku Gothic ProN',sans-serif`,
       `word-break:break-all`,
       `overflow:hidden`,
       `line-height:1.35`,
       `background:rgba(255,255,255,0.92)`,
-      `border:1px solid rgba(16,185,129,0.5)`,
+      `border:1px solid ${PDF_COLOR_MAP[box.color] || PDF_COLOR_MAP.green}`,
       `border-radius:3px`,
+      `box-sizing:border-box`,
     ].join(';');
     el.textContent = box.text;
     overlay.appendChild(el);
