@@ -18,10 +18,13 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   const [voiceBoxId, setVoiceBoxId] = useState(null);
   const [saving, setSaving] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [history, setHistory] = useState([]);
   const overlayRef = useRef(null);
   const saveTimerRef = useRef(null);
   const sessionRef = useRef(session);
   const prevAnsweredRef = useRef(0);
+  const historyTimerRef = useRef(null);
+  const pendingHistoryRef = useRef(null);
   useEffect(() => { sessionRef.current = session; }, [session]);
 
   const currentPage = session.pages[pageIndex];
@@ -30,6 +33,20 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   // Functional update avoids stale-closure overwrites when answers are confirmed in quick succession
   const updateSession = useCallback(
     (updater) => {
+      // Capture pre-update boxes for undo; debounced so rapid drags produce one history entry
+      if (!historyTimerRef.current) {
+        pendingHistoryRef.current = sessionRef.current.pages[pageIndex]?.boxes ?? [];
+      }
+      clearTimeout(historyTimerRef.current);
+      historyTimerRef.current = setTimeout(() => {
+        const snapshot = pendingHistoryRef.current;
+        if (snapshot !== null) {
+          setHistory((prev) => [...prev.slice(-19), snapshot]);
+        }
+        historyTimerRef.current = null;
+        pendingHistoryRef.current = null;
+      }, 400);
+
       onUpdate((prev) => ({
         ...prev,
         pages: prev.pages.map((p, i) =>
@@ -49,6 +66,33 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   );
 
   useEffect(() => () => clearTimeout(saveTimerRef.current), []);
+
+  useEffect(() => {
+    setHistory([]);
+    clearTimeout(historyTimerRef.current);
+    historyTimerRef.current = null;
+    pendingHistoryRef.current = null;
+  }, [pageIndex]);
+
+  const handleUndo = useCallback(() => {
+    setHistory((prev) => {
+      if (!prev.length) return prev;
+      const boxes = prev[prev.length - 1];
+      setSelectedBoxId(null);
+      onUpdate((s) => ({
+        ...s,
+        pages: s.pages.map((p, i) => (i === pageIndex ? { ...p, boxes } : p)),
+        updatedAt: Date.now(),
+      }));
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = setTimeout(async () => {
+        setSaving(true);
+        await saveSession(sessionRef.current).catch(console.error);
+        setSaving(false);
+      }, 800);
+      return prev.slice(0, -1);
+    });
+  }, [pageIndex, onUpdate]);
 
   const handleOverlayClick = useCallback(
     (e) => {
@@ -221,6 +265,16 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
           {totalAnswered} / {totalBoxes} こたえた
         </div>
+        {mode === 'place' && (
+          <button
+            className="btn-secondary answer-undo-btn"
+            onClick={handleUndo}
+            disabled={history.length === 0}
+            aria-label="もどす"
+          >
+            ↩ もどす
+          </button>
+        )}
         <div className="answer-footer-spacer" />
         <button
           className="btn-green"

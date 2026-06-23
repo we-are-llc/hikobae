@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 
 const MIN_SIZE = 0.02;
 
@@ -33,6 +33,15 @@ export default function AnswerBox({
   onAnswer,
 }) {
   const pointerRef = useRef(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (!isSelected) {
+      setExpanded(false);
+      setShowConfirm(false);
+    }
+  }, [isSelected]);
 
   const toFrac = useCallback(
     (clientX, clientY) => {
@@ -129,15 +138,10 @@ export default function AnswerBox({
     [mode, box, onUpdate, toFrac]
   );
 
-  const handleDelete = useCallback(
-    (e) => {
-      e.stopPropagation();
-      if (window.confirm('この回答欄を削除しますか？')) {
-        onDelete(box.id);
-      }
-    },
-    [box.id, onDelete]
-  );
+  const handleDelete = useCallback((e) => {
+    e.stopPropagation();
+    setShowConfirm(true);
+  }, []);
 
   const palette = COLOR_PALETTE[box.color] || COLOR_PALETTE.green;
 
@@ -193,6 +197,31 @@ export default function AnswerBox({
       {/* Edit controls (place mode, selected) */}
       {mode === 'place' && isSelected && (
         <>
+          {/* Delete confirmation overlay */}
+          {showConfirm && (
+            <div
+              className="box-delete-confirm"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="box-delete-confirm-msg">けしますか？</span>
+              <div className="box-delete-confirm-btns">
+                <button
+                  className="box-confirm-btn box-confirm-yes"
+                  onClick={(e) => { e.stopPropagation(); onDelete(box.id); }}
+                >
+                  けす
+                </button>
+                <button
+                  className="box-confirm-btn box-confirm-no"
+                  onClick={(e) => { e.stopPropagation(); setShowConfirm(false); }}
+                >
+                  やめる
+                </button>
+              </div>
+            </div>
+          )}
+
           <button
             className="box-mic-btn"
             onPointerDown={(e) => e.stopPropagation()}
@@ -209,45 +238,66 @@ export default function AnswerBox({
           >
             🗑
           </button>
-          <div className="box-fontsize-controls">
-            <button
-              className="box-fontsize-btn"
-              onPointerDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                onUpdate({ ...box, fontSize: Math.max(8, (box.fontSize || 14) - 2) });
-              }}
-              aria-label="文字を小さく"
-            >
-              ぁ
-            </button>
-            <button
-              className="box-fontsize-btn"
-              onPointerDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                onUpdate({ ...box, fontSize: Math.min(36, (box.fontSize || 14) + 2) });
-              }}
-              aria-label="文字を大きく"
-            >
-              あ
-            </button>
-          </div>
-          <div className="box-color-controls">
-            {COLOR_KEYS.map((key) => (
+
+          {expanded ? (
+            <>
+              <div className="box-fontsize-controls">
+                <button
+                  className="box-fontsize-btn"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUpdate({ ...box, fontSize: Math.max(8, (box.fontSize || 14) - 2) });
+                  }}
+                  aria-label="文字を小さく"
+                >
+                  ぁ
+                </button>
+                <button
+                  className="box-fontsize-btn"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUpdate({ ...box, fontSize: Math.min(36, (box.fontSize || 14) + 2) });
+                  }}
+                  aria-label="文字を大きく"
+                >
+                  あ
+                </button>
+              </div>
+              <div className="box-color-controls">
+                {COLOR_KEYS.map((key) => (
+                  <button
+                    key={key}
+                    className={`box-color-btn${(box.color || 'green') === key ? ' active' : ''}`}
+                    style={{ background: COLOR_PALETTE[key].main }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onUpdate({ ...box, color: key });
+                    }}
+                    aria-label={key}
+                  />
+                ))}
+              </div>
               <button
-                key={key}
-                className={`box-color-btn${(box.color || 'green') === key ? ' active' : ''}`}
-                style={{ background: COLOR_PALETTE[key].main }}
+                className="box-expand-btn box-expand-close"
                 onPointerDown={(e) => e.stopPropagation()}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onUpdate({ ...box, color: key });
-                }}
-                aria-label={key}
-              />
-            ))}
-          </div>
+                onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
+              >
+                ▲ とじる
+              </button>
+            </>
+          ) : (
+            <button
+              className="box-expand-btn"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
+            >
+              ⚙ もっと
+            </button>
+          )}
+
           {HANDLES.map((h) => (
             <div
               key={h.id}

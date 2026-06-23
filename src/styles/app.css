@@ -595,6 +595,11 @@ button:disabled {
   flex: 1;
 }
 
+.answer-undo-btn {
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
 /* ===== Mode bar ===== */
 .mode-bar {
   display: flex;
@@ -735,16 +740,16 @@ button:disabled {
 /* Delete button on box */
 .box-delete-btn {
   position: absolute;
-  top: -42px;
+  top: -50px;
   right: -8px;
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   min-height: unset;
   padding: 0;
   background: var(--danger);
   color: #fff;
   border-radius: 50%;
-  font-size: 15px;
+  font-size: 18px;
   z-index: 20;
   flex-shrink: 0;
   box-shadow: 0 2px 6px rgba(0,0,0,0.35);
@@ -754,16 +759,16 @@ button:disabled {
 /* Mic button on box (place mode, selected) */
 .box-mic-btn {
   position: absolute;
-  top: -42px;
+  top: -50px;
   left: -8px;
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   min-height: unset;
   padding: 0;
   background: #10B981;
   color: #fff;
   border-radius: 50%;
-  font-size: 15px;
+  font-size: 18px;
   z-index: 20;
   flex-shrink: 0;
   box-shadow: 0 2px 6px rgba(0,0,0,0.35);
@@ -773,34 +778,7 @@ button:disabled {
 /* Font size controls on box */
 .box-fontsize-controls {
   position: absolute;
-  bottom: -28px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 4px;
-  z-index: 20;
-}
-
-.box-fontsize-btn {
-  height: 26px;
-  min-height: unset;
-  padding: 0 8px;
-  background: #6366f1;
-  color: #fff;
-  border-radius: 4px;
-  font-weight: 700;
-  flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  white-space: nowrap;
-}
-
-.box-fontsize-btn:first-child { font-size: 10px; }
-.box-fontsize-btn:last-child  { font-size: 15px; }
-
-/* Color swatches on box */
-.box-color-controls {
-  position: absolute;
-  bottom: -54px;
+  bottom: -46px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -808,9 +786,36 @@ button:disabled {
   z-index: 20;
 }
 
+.box-fontsize-btn {
+  height: 44px;
+  min-height: unset;
+  padding: 0 14px;
+  background: #6366f1;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  white-space: nowrap;
+}
+
+.box-fontsize-btn:first-child { font-size: 12px; }
+.box-fontsize-btn:last-child  { font-size: 18px; }
+
+/* Color swatches on box */
+.box-color-controls {
+  position: absolute;
+  bottom: -96px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 20;
+}
+
 .box-color-btn {
-  width: 22px;
-  height: 22px;
+  width: 34px;
+  height: 34px;
   min-height: unset;
   padding: 0;
   border-radius: 50%;
@@ -822,7 +827,84 @@ button:disabled {
 
 .box-color-btn.active {
   border-color: #1e293b;
-  transform: scale(1.25);
+  transform: scale(1.2);
+}
+
+/* Expand/collapse button for box controls */
+.box-expand-btn {
+  position: absolute;
+  bottom: -46px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 38px;
+  min-height: unset;
+  padding: 0 16px;
+  background: #6366f1;
+  color: #fff;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  z-index: 20;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  touch-action: manipulation;
+}
+
+.box-expand-btn.box-expand-close {
+  bottom: -138px;
+  background: #94A3B8;
+}
+
+/* Delete confirmation overlay */
+.box-delete-confirm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  z-index: 30;
+}
+
+.box-delete-confirm-msg {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.box-delete-confirm-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.box-confirm-btn {
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.box-confirm-yes {
+  background: var(--danger);
+  color: #fff;
+}
+
+.box-confirm-no {
+  background: #e2e8f0;
+  color: #1e293b;
 }
 
 /* ===== Celebration overlay ===== */
