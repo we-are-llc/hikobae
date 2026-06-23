@@ -166,6 +166,21 @@ button:disabled {
   border-radius: var(--radius);
 }
 
+.home-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.home-footer-sep {
+  color: var(--border);
+  font-size: 13px;
+  user-select: none;
+}
+
 .home-about-link {
   background: none;
   border: none;
@@ -175,7 +190,10 @@ button:disabled {
   text-underline-offset: 3px;
   cursor: pointer;
   padding: 4px 8px;
-  margin-top: auto;
+}
+
+.home-bug-link {
+  color: var(--place);
 }
 
 /* ===== About page ===== */

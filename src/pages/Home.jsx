@@ -77,9 +77,20 @@ export default function Home({ onNavigate }) {
         </div>
       )}
 
-      <a className="home-about-link" href="/lp.html" target="_blank" rel="noopener noreferrer">
-        このアプリについて
-      </a>
+      <div className="home-footer-links">
+        <a className="home-about-link" href="/lp.html" target="_blank" rel="noopener noreferrer">
+          このアプリについて
+        </a>
+        <span className="home-footer-sep">·</span>
+        <a
+          className="home-about-link home-bug-link"
+          href="https://github.com/we-are-llc/hikobae/issues/new"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          不具合を報告する
+        </a>
+      </div>
 
       {showSessions && (
         <div className="sessions-modal-overlay" onClick={() => setShowSessions(false)}>
