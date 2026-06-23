@@ -16,7 +16,7 @@ function readFileAsDataURL(file) {
 }
 
 export default function Import({ onNavigate }) {
-  const [pages, setPages] = useState([]); // [{ imageData }]
+  const [pages, setPages] = useState([]);
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -78,6 +78,18 @@ export default function Import({ onNavigate }) {
     onNavigate('answer', session);
   }, [pages, name, onNavigate]);
 
+  const hiddenInput = (
+    <input
+      id={inputId}
+      ref={inputRef}
+      type="file"
+      accept="image/*,application/pdf"
+      multiple
+      style={{ display: 'none' }}
+      onChange={handleFileChange}
+    />
+  );
+
   return (
     <div className="import-page">
       <div className="import-header">
@@ -89,63 +101,57 @@ export default function Import({ onNavigate }) {
 
       <div className="import-body">
         {loading && (
-          <div className="loading">
+          <div className="loading" style={{ flex: 1 }}>
             <div className="spinner" />
             <span>よみこんでいます...</span>
           </div>
         )}
 
-        {!loading && (
+        {!loading && pages.length === 0 && (
+          /* 未選択: 大きなドロップゾーン */
+          <label
+            htmlFor={inputId}
+            className={`dropzone ${dragOver ? 'drag-over' : ''}`}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+          >
+            <div className="dropzone-icon">📷</div>
+            <div className="dropzone-label">ここをタップして えらぶ</div>
+            <div className="dropzone-hint">画像 (JPEG / PNG) または PDF</div>
+            {hiddenInput}
+          </label>
+        )}
+
+        {!loading && pages.length > 0 && (
           <>
-            <label
-              htmlFor={inputId}
-              className={`dropzone ${dragOver ? 'drag-over' : ''}`}
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={handleDrop}
-            >
-              <div className="dropzone-icon">📷</div>
-              <div className="dropzone-label">
-                {pages.length === 0 ? 'ここをタップして えらぶ' : 'もっと ついかする'}
-              </div>
-              <div className="dropzone-hint">
-                画像 (JPEG / PNG) または PDF
-              </div>
-              <input
-                id={inputId}
-                ref={inputRef}
-                type="file"
-                accept="image/*,application/pdf"
-                multiple
-                style={{ display: 'none' }}
-                onChange={handleFileChange}
-                capture="environment"
-              />
+            {/* 選択済み: コンパクトな追加ボタン */}
+            <label htmlFor={inputId} className="add-more-btn">
+              ＋ もっと ついかする
+              {hiddenInput}
             </label>
 
-            {pages.length > 0 && (
-              <>
-                <div className="preview-grid">
-                  {pages.map((p, i) => (
-                    <div key={i} className="preview-thumb">
-                      <img src={p.imageData} alt={`ページ ${i + 1}`} loading="lazy" />
-                      <div className="preview-thumb-num">{i + 1}</div>
-                    </div>
-                  ))}
+            {/* サムネイル一覧 */}
+            <div className="preview-grid">
+              {pages.map((p, i) => (
+                <div key={i} className="preview-thumb">
+                  <img src={p.imageData} alt={`ページ ${i + 1}`} loading="lazy" />
+                  <div className="preview-thumb-num">{i + 1}</div>
                 </div>
+              ))}
+            </div>
 
-                <div className="import-name-row">
-                  <label htmlFor="session-name">なまえ（にゅうりょく）</label>
-                  <input
-                    id="session-name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="れい：すうがく5ページ"
-                  />
-                </div>
-              </>
-            )}
+            {/* なまえ入力 */}
+            <div className="import-name-row">
+              <label htmlFor="session-name">なまえ（にゅうりょく）</label>
+              <input
+                id="session-name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="れい：すうがく5ページ"
+              />
+            </div>
           </>
         )}
       </div>
