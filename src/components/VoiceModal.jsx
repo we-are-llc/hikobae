@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 import { useSpeech, applyVoiceCommands } from '../hooks/useSpeech.js';
 
 export default function VoiceModal({ box, onConfirm, onClose }) {
@@ -6,6 +6,8 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
     useSpeech();
   const [editText, setEditText] = useState(box.text || '');
   const [phase, setPhase] = useState('voice'); // 'voice' | 'edit'
+  const phaseRef = useRef(phase);
+  useEffect(() => { phaseRef.current = phase; }, [phase]);
 
   useEffect(() => {
     start();
@@ -13,7 +15,8 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
   }, []);
 
   useEffect(() => {
-    if (transcript) {
+    // 手入力モードに切り替わった後は音声認識の結果で上書きしない
+    if (transcript && phaseRef.current === 'voice') {
       setEditText(applyVoiceCommands(transcript));
     }
   }, [transcript]);
@@ -41,6 +44,8 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
 
   const handleEdit = useCallback(() => {
     stop();
+    // stop() は非同期なので、マイクが止まる前に phase を切り替えて
+    // 以降の transcript 更新がUIに反映されないようにする
     setPhase('edit');
   }, [stop]);
 
@@ -72,8 +77,12 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
           <>
             <div className="voice-transcript-wrap">
               <div
-                className={`voice-transcript ${isListening ? 'listening' : ''} ${editText ? 'editable' : ''}`}
-                onClick={editText ? handleEdit : undefined}
+                className={`voice-transcript ${isListening ? 'listening' : ''} editable`}
+                onClick={handleEdit}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && handleEdit()}
+                style={{ touchAction: 'manipulation' }}
               >
                 {editText || interimTranscript ? (
                   <>
