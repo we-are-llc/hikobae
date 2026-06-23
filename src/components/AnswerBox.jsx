@@ -205,7 +205,7 @@ export default function AnswerBox({
             onClick={handleDelete}
             aria-label="削除"
           >
-            ×
+            🗑
           </button>
           <div className="box-fontsize-controls">
             <button
