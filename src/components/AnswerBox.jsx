@@ -179,7 +179,7 @@ export default function AnswerBox({
 
       {/* Content */}
       {box.text ? (
-        <span className="answer-box-text">{box.text}</span>
+        <span className="answer-box-text" style={{ fontSize: box.fontSize || 14 }}>{box.text}</span>
       ) : (
         mode === 'answer' && (
           <span className="answer-box-placeholder">タップ</span>
@@ -197,6 +197,30 @@ export default function AnswerBox({
           >
             ×
           </button>
+          <div className="box-fontsize-controls">
+            <button
+              className="box-fontsize-btn"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpdate({ ...box, fontSize: Math.max(8, (box.fontSize || 14) - 2) });
+              }}
+              aria-label="文字を小さく"
+            >
+              A-
+            </button>
+            <button
+              className="box-fontsize-btn"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpdate({ ...box, fontSize: Math.min(36, (box.fontSize || 14) + 2) });
+              }}
+              aria-label="文字を大きく"
+            >
+              A+
+            </button>
+          </div>
           {HANDLES.map((h) => (
             <div
               key={h.id}

@@ -67,6 +67,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         width: DEFAULT_BOX_W,
         height: DEFAULT_BOX_H,
         text: '',
+        fontSize: 14,
       };
 
       updateSession((p) => ({ boxes: [...p.boxes, newBox] }));

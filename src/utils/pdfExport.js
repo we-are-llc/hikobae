@@ -61,7 +61,7 @@ function buildRenderWrapper(page) {
       `width:${box.width * 100}%`,
       `height:${box.height * 100}%`,
       `padding:2px 5px`,
-      `font-size:13px`,
+      `font-size:${box.fontSize || 13}px`,
       `font-family:-apple-system,'Hiragino Kaku Gothic ProN',sans-serif`,
       `word-break:break-all`,
       `overflow:hidden`,
