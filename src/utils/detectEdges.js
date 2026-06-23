@@ -1,15 +1,20 @@
-// Document corner detection — brightness-profile approach.
-// Uses Otsu threshold to separate bright paper from dark background,
-// then scans row/column brightness fractions to locate document edges.
-// Works offline; no external dependencies.
+// Document corner detection — Otsu threshold + diagonal-extreme quadrilateral.
+// Finds the actual 4 perspective-distorted corners (trapezoid), not just
+// the axis-aligned bounding box.
+//
+// Algorithm:
+//   1. Downsample → grayscale → Otsu binary mask
+//   2. Dilate mask to fill text/grid lines inside paper
+//   3. Find 4 corners as diagonal extremes of the dilated bright region:
+//        tl = min(x+y),  tr = max(x-y),  br = max(x+y),  bl = min(x-y)
 //
 // Returns [{id:'tl',x,y}, {id:'tr',x,y}, {id:'br',x,y}, {id:'bl',x,y}]
 // in fractional [0,1] coords, or null when detection is unreliable.
 
-const SCALE_MAX = 400;  // Downsample to ≤ 400px for speed
-const MARGIN_F  = 0.04; // Ignore 4% from image edges
-const PEAK_F    = 0.25; // Row/col frac must exceed 25% of peak to count as paper
-const MIN_F     = 0.25; // Detected region must be ≥ 25% of image size
+const SCALE_MAX  = 400;  // Downsample to ≤ 400px for performance
+const MARGIN_F   = 0.04; // Ignore 4% from image edges
+const DILATE_R   = 5;    // Dilation radius (fills lines/text gaps inside paper)
+const MIN_SIZE_F = 0.25; // Detected region must be ≥ 25% of image in each dimension
 
 function otsu(gray) {
   const hist = new Int32Array(256);
@@ -32,14 +37,35 @@ function otsu(gray) {
   return thr;
 }
 
-function smooth7(arr) {
-  const out = new Float32Array(arr.length);
-  for (let i = 3; i < arr.length - 3; i++) {
-    out[i] = (arr[i-3]+arr[i-2]+arr[i-1]+arr[i]+arr[i+1]+arr[i+2]+arr[i+3]) / 7;
+// O(n) sliding-window 1D dilation
+function dilate1D(src, len, r) {
+  const out = new Uint8Array(len);
+  let count = 0;
+  for (let i = 0; i < Math.min(r, len); i++) if (src[i]) count++;
+  for (let i = 0; i < len; i++) {
+    const add = i + r;
+    const rem = i - r - 1;
+    if (add < len && src[add]) count++;
+    if (rem >= 0 && src[rem]) count--;
+    out[i] = count > 0 ? 1 : 0;
   }
-  // Fill edges with nearest interior value
-  for (let i = 0; i < 3; i++) out[i] = out[3];
-  for (let i = arr.length - 3; i < arr.length; i++) out[i] = out[arr.length - 4];
+  return out;
+}
+
+// Separable 2D dilation: horizontal pass then vertical pass → O(w*h)
+function dilate2D(binary, w, h, r) {
+  const tmp = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) {
+    const row = dilate1D(binary.subarray(y * w, (y + 1) * w), w, r);
+    tmp.set(row, y * w);
+  }
+  const out = new Uint8Array(w * h);
+  const col = new Uint8Array(h);
+  for (let x = 0; x < w; x++) {
+    for (let y = 0; y < h; y++) col[y] = tmp[y * w + x];
+    const d = dilate1D(col, h, r);
+    for (let y = 0; y < h; y++) out[y * w + x] = d[y];
+  }
   return out;
 }
 
@@ -66,69 +92,60 @@ export function detectDocumentCorners(imgEl) {
 
   // Otsu threshold — separates dark background from bright paper
   const thr = otsu(gray);
-  // If threshold is too extreme the image has poor contrast; bail out
-  if (thr < 30 || thr > 225) return null;
+  if (thr < 30 || thr > 225) return null; // Poor contrast
 
-  // Per-row and per-column bright-pixel fractions
-  const rowFrac = new Float32Array(h);
-  for (let y = 0; y < h; y++) {
-    let cnt = 0;
-    for (let x = 0; x < w; x++) if (gray[y*w+x] > thr) cnt++;
-    rowFrac[y] = cnt / w;
-  }
-  const colFrac = new Float32Array(w);
-  for (let x = 0; x < w; x++) {
-    let cnt = 0;
-    for (let y = 0; y < h; y++) if (gray[y*w+x] > thr) cnt++;
-    colFrac[x] = cnt / h;
-  }
+  // Binary mask: 1 = bright (paper), 0 = dark (background)
+  const binary = new Uint8Array(w * h);
+  for (let i = 0; i < w * h; i++) binary[i] = gray[i] > thr ? 1 : 0;
 
-  const rowS = smooth7(rowFrac);
-  const colS = smooth7(colFrac);
+  // Dilate to fill text and grid lines inside the paper region
+  const dilated = dilate2D(binary, w, h, DILATE_R);
 
-  // Peak bright fraction (should be well inside the paper region)
-  let maxRow = 0, maxCol = 0;
-  for (let y = 0; y < h; y++) if (rowS[y] > maxRow) maxRow = rowS[y];
-  for (let x = 0; x < w; x++) if (colS[x] > maxCol) maxCol = colS[x];
-
-  // If the peak is too small, the paper might not be distinguishable; bail out
-  if (maxRow < 0.10 || maxCol < 0.10) return null;
-
-  const rThr = maxRow * PEAK_F;
-  const cThr = maxCol * PEAK_F;
-
+  // Find 4 corners as diagonal extremes of the dilated bright region.
+  // For a convex quadrilateral:
+  //   tl = min(x+y)  — leftmost/topmost
+  //   tr = max(x-y)  — rightmost/topmost
+  //   br = max(x+y)  — rightmost/bottommost
+  //   bl = min(x-y)  — leftmost/bottommost
   const my = Math.max(1, Math.floor(MARGIN_F * h));
   const mx = Math.max(1, Math.floor(MARGIN_F * w));
 
-  let top = -1, bottom = -1, left = -1, right = -1;
+  let tlS = Infinity,  tlX = -1, tlY = -1;
+  let trS = -Infinity, trX = -1, trY = -1;
+  let brS = -Infinity, brX = -1, brY = -1;
+  let blS = Infinity,  blX = -1, blY = -1;
 
   for (let y = my; y < h - my; y++) {
-    if (rowS[y] >= rThr) { top = y; break; }
-  }
-  for (let y = h - 1 - my; y >= my; y--) {
-    if (rowS[y] >= rThr) { bottom = y; break; }
-  }
-  for (let x = mx; x < w - mx; x++) {
-    if (colS[x] >= cThr) { left = x; break; }
-  }
-  for (let x = w - 1 - mx; x >= mx; x--) {
-    if (colS[x] >= cThr) { right = x; break; }
+    for (let x = mx; x < w - mx; x++) {
+      if (!dilated[y * w + x]) continue;
+      const s1 = x + y;
+      const s2 = x - y;
+      if (s1 < tlS) { tlS = s1; tlX = x; tlY = y; }
+      if (s2 > trS) { trS = s2; trX = x; trY = y; }
+      if (s1 > brS) { brS = s1; brX = x; brY = y; }
+      if (s2 < blS) { blS = s2; blX = x; blY = y; }
+    }
   }
 
-  // All four edges must have been found
-  if (top < 0 || bottom < 0 || left < 0 || right < 0) return null;
-  if (top >= bottom || left >= right) return null;
+  if (tlX < 0 || trX < 0 || brX < 0 || blX < 0) return null;
 
-  // Region size sanity check
-  const rw = right - left;
-  const rh = bottom - top;
-  if (rw < w * MIN_F || rh < h * MIN_F) return null;
-  if (rw > w * 0.97 || rh > h * 0.97) return null;
+  // Sanity checks: quadrilateral must span a plausible document size
+  const spanW = Math.max(trX, brX) - Math.min(tlX, blX);
+  const spanH = Math.max(blY, brY) - Math.min(tlY, trY);
+  if (spanW < w * MIN_SIZE_F || spanH < h * MIN_SIZE_F) return null;
+  if (spanW > w * 0.97     || spanH > h * 0.97)         return null;
+
+  // Each corner should roughly be in its own quadrant of the image
+  const cx = w / 2, cy = h / 2;
+  if (tlX > cx || tlY > cy) return null;
+  if (trX < cx || trY > cy) return null;
+  if (brX < cx || brY < cy) return null;
+  if (blX > cx || blY < cy) return null;
 
   return [
-    { id: 'tl', x: left  / w, y: top    / h },
-    { id: 'tr', x: right / w, y: top    / h },
-    { id: 'br', x: right / w, y: bottom / h },
-    { id: 'bl', x: left  / w, y: bottom / h },
+    { id: 'tl', x: tlX / w, y: tlY / h },
+    { id: 'tr', x: trX / w, y: trY / h },
+    { id: 'br', x: brX / w, y: brY / h },
+    { id: 'bl', x: blX / w, y: blY / h },
   ];
 }
