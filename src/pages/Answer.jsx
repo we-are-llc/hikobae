@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import ModeBar, { MODE_HINTS } from '../components/ModeBar.jsx';
+import ModeBar from '../components/ModeBar.jsx';
 import AnswerBox from '../components/AnswerBox.jsx';
 import VoiceModal from '../components/VoiceModal.jsx';
 import { saveSession } from '../utils/db.js';
@@ -223,11 +223,6 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         <div className="answer-header-row2">
           <ModeBar mode={mode} onChange={handleModeChange} />
         </div>
-      </div>
-
-      {/* Mode hint */}
-      <div className="mode-hint" data-mode={mode}>
-        {MODE_HINTS[mode]}
       </div>
 
       {/* Scrollable image area */}
