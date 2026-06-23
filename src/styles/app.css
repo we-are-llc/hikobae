@@ -778,7 +778,7 @@ button:disabled {
 /* Font size controls on box */
 .box-fontsize-controls {
   position: absolute;
-  bottom: -46px;
+  bottom: -44px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -805,7 +805,7 @@ button:disabled {
 /* Color swatches on box */
 .box-color-controls {
   position: absolute;
-  bottom: -96px;
+  bottom: -82px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -833,7 +833,7 @@ button:disabled {
 /* Expand/collapse button for box controls */
 .box-expand-btn {
   position: absolute;
-  bottom: -46px;
+  bottom: -38px;
   left: 50%;
   transform: translateX(-50%);
   height: 38px;
@@ -851,7 +851,7 @@ button:disabled {
 }
 
 .box-expand-btn.box-expand-close {
-  bottom: -138px;
+  bottom: -124px;
   background: #94A3B8;
 }
 

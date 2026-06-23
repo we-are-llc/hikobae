@@ -96,6 +96,11 @@ export default function Answer({ session, onNavigate, onUpdate }) {
 
   const handleOverlayClick = useCallback(
     (e) => {
+      // Ignore clicks that bubbled from child elements (buttons, boxes).
+      // Child elements call e.stopPropagation() but as a safety net check
+      // that the click actually originated on the overlay itself.
+      if (e.target !== overlayRef.current) return;
+
       if (mode !== 'place') {
         setSelectedBoxId(null);
         return;

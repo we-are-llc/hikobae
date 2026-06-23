@@ -68,6 +68,8 @@ export default function AnswerBox({
     (e) => {
       e.stopPropagation();
       if (mode !== 'place') return;
+      // Don't initiate drag when clicking a control button inside the box
+      if (e.target.closest('button')) return;
 
       onSelect(box.id);
       const { fx: sx, fy: sy } = toFrac(e.clientX, e.clientY);
