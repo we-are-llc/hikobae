@@ -217,7 +217,7 @@ export default function AnswerBox({
               }}
               aria-label="文字を小さく"
             >
-              A-
+              ぁ
             </button>
             <button
               className="box-fontsize-btn"
@@ -228,7 +228,7 @@ export default function AnswerBox({
               }}
               aria-label="文字を大きく"
             >
-              A+
+              あ
             </button>
           </div>
           <div className="box-color-controls">
