@@ -67,7 +67,8 @@ export default function Crop({ name, rawPages, onNavigate }) {
     if (!skip && imgRef.current && imgLoaded) {
       try {
         const canvas = warpPerspective(imgRef.current, corners);
-        imageData = canvas.toDataURL('image/jpeg', 0.92);
+        // PNG（ロスレス）で保存して JPEG 二重圧縮によるテキストのぼやけを防ぐ
+        imageData = canvas.toDataURL('image/png');
       } catch (err) {
         console.error('warp failed, using original:', err);
       }

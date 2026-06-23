@@ -9,7 +9,7 @@ async function getPdfJs() {
   return pdfjsLib;
 }
 
-export async function renderPDFToImages(file, scale = 1.5) {
+export async function renderPDFToImages(file, scale = 2.0) {
   const lib = await getPdfJs();
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await lib.getDocument({ data: arrayBuffer }).promise;

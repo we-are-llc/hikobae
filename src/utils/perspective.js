@@ -79,10 +79,18 @@ function computeOutputSize(corners) {
   const botW = Math.hypot(br.x - bl.x, br.y - bl.y);
   const leftH = Math.hypot(bl.x - tl.x, bl.y - tl.y);
   const rightH = Math.hypot(br.x - tr.x, br.y - tr.y);
-  return {
-    width: Math.max(100, Math.round((topW + botW) / 2)),
-    height: Math.max(100, Math.round((leftH + rightH) / 2)),
-  };
+  let width = Math.max(100, Math.round((topW + botW) / 2));
+  let height = Math.max(100, Math.round((leftH + rightH) / 2));
+
+  // モバイルブラウザのキャンバスメモリ上限内に収める（特に iOS Safari）
+  const MAX_SIDE = 2400;
+  if (width > MAX_SIDE || height > MAX_SIDE) {
+    const scale = MAX_SIDE / Math.max(width, height);
+    width = Math.round(width * scale);
+    height = Math.round(height * scale);
+  }
+
+  return { width, height };
 }
 
 function renderWebGL(img, H, outW, outH) {
