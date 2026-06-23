@@ -75,12 +75,12 @@ export default function About({ onNavigate }) {
         </section>
 
         <section className="about-section">
-          <h2>開発・お問い合わせ</h2>
-          <p>開発：合同会社 派遣免許</p>
+          <h2>お問い合わせ</h2>
+          <p>開発：ウィアー合同会社 <a href="https://www.we-re.net/" target="_blank" rel="noopener noreferrer">we-re.net</a></p>
           <p>
             お問い合わせ：
-            <a href="mailto:free@we-re.net" className="about-link">
-              free@we-re.net
+            <a href="mailto:info@we-re.net" className="about-link">
+              info@we-re.net
             </a>
           </p>
           <p className="about-muted">
