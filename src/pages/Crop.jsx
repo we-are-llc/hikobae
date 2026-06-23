@@ -26,7 +26,6 @@ export default function Crop({ name, rawPages, onNavigate }) {
   const [processing, setProcessing] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [rotatedImages, setRotatedImages] = useState({});
-  const [autoDetected, setAutoDetected] = useState(false);
   const imgRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -36,7 +35,6 @@ export default function Crop({ name, rawPages, onNavigate }) {
   useEffect(() => {
     setCorners(initCorners());
     setImgLoaded(false);
-    setAutoDetected(false);
   }, [pageIdx]);
 
   const toFrac = useCallback((clientX, clientY) => {
@@ -77,7 +75,6 @@ export default function Crop({ name, rawPages, onNavigate }) {
     setRotatedImages((prev) => ({ ...prev, [pageIdx]: canvas.toDataURL('image/png') }));
     setCorners(initCorners());
     setImgLoaded(false);
-    setAutoDetected(false);
   }, [imgLoaded, pageIdx]);
 
   const processPage = useCallback(async (skip) => {
@@ -135,12 +132,6 @@ export default function Crop({ name, rawPages, onNavigate }) {
         </div>
       </div>
 
-      <div className="crop-hint">
-        {autoDetected
-          ? '✓ かどを じどうで みつけました。ずれていたら ● をうごかしてください'
-          : '● を 用紙の かどに あわせてください'}
-      </div>
-
       <div className="crop-scroll">
         <div ref={containerRef} className="crop-container">
           <img
@@ -152,10 +143,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
             onLoad={() => {
               setImgLoaded(true);
               const detected = detectDocumentCorners(imgRef.current);
-              if (detected) {
-                setCorners(detected);
-                setAutoDetected(true);
-              }
+              if (detected) setCorners(detected);
             }}
           />
 
@@ -225,7 +213,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
           ) : pageIdx + 1 < total ? (
             'きりとる →'
           ) : (
-            'きりとって はじめる →'
+            'はじめる →'
           )}
         </button>
       </div>
