@@ -286,7 +286,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
           onClick={() => onNavigate('confirm', sessionRef.current)}
           disabled={totalBoxes === 0}
         >
-          かくにん・しゅつりょく →
+          だす →
         </button>
       </div>
 
