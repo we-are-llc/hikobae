@@ -70,20 +70,25 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
 
         {phase === 'voice' ? (
           <>
-            <div className={`voice-transcript ${isListening ? 'listening' : ''}`}>
-              {editText || interimTranscript ? (
-                <>
-                  {editText && <span>{editText}</span>}
-                  {interimTranscript && (
-                    <span className="voice-interim"> {interimTranscript}</span>
-                  )}
-                </>
-              ) : (
-                <span className="voice-transcript-placeholder">
-                  {isListening
-                    ? 'はなしています...'
-                    : 'マイクボタンをおしてはなしてください'}
-                </span>
+            <div className="voice-transcript-wrap">
+              <div className={`voice-transcript ${isListening ? 'listening' : ''}`}>
+                {editText || interimTranscript ? (
+                  <>
+                    {editText && <span>{editText}</span>}
+                    {interimTranscript && (
+                      <span className="voice-interim"> {interimTranscript}</span>
+                    )}
+                  </>
+                ) : (
+                  <span className="voice-transcript-placeholder">
+                    {isListening ? 'はなしています...' : 'マイクをおしてはなして'}
+                  </span>
+                )}
+              </div>
+              {editText && (
+                <button className="voice-read-btn" onClick={handleReadAloud} aria-label="読み上げ">
+                  🔊
+                </button>
               )}
             </div>
 
@@ -96,7 +101,7 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
                 {isListening ? '⏹' : '🎙'}
               </button>
               <div className={`voice-mic-label ${isListening ? 'recording' : ''}`}>
-                {isListening ? 'はなしています（もう一度おすとていし）' : 'マイクスタート'}
+                {isListening ? 'はなしています' : 'マイクスタート'}
               </div>
             </div>
 
@@ -107,14 +112,7 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
               <button className="btn-ghost" onClick={handleEdit}>
                 てで なおす
               </button>
-              <button className="btn-ghost" onClick={handleReadAloud} disabled={!editText}>
-                🔊 よんで
-              </button>
-              <button
-                className="btn-green"
-                onClick={handleConfirm}
-                disabled={!editText}
-              >
+              <button className="btn-green" onClick={handleConfirm} disabled={!editText}>
                 かくてい
               </button>
             </div>
@@ -122,27 +120,25 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
         ) : (
           <>
             <div className="voice-edit-row">
-              <div className="voice-edit-label">てで なおせます</div>
+              <div className="voice-edit-label-row">
+                <span className="voice-edit-label">てで なおせます</span>
+                <button className="voice-read-btn" onClick={handleReadAloud} disabled={!editText} aria-label="読み上げ">
+                  🔊
+                </button>
+              </div>
               <textarea
                 className="voice-edit-input"
                 value={editText}
                 onChange={(e) => setEditText(e.target.value)}
                 autoFocus
-                rows={3}
+                rows={2}
               />
             </div>
             <div className="voice-actions">
               <button className="btn-secondary" onClick={() => setPhase('voice')}>
                 もどる
               </button>
-              <button className="btn-ghost" onClick={handleReadAloud} disabled={!editText}>
-                🔊 よんで
-              </button>
-              <button
-                className="btn-green"
-                onClick={handleConfirm}
-                disabled={!editText}
-              >
+              <button className="btn-green" onClick={handleConfirm} disabled={!editText}>
                 かくてい
               </button>
             </div>
