@@ -1,7 +1,26 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
+
+function useDragPos() {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const onPointerDown = useCallback((e) => {
+    if (e.pointerType === 'touch') return;
+    e.preventDefault();
+    const sx = e.clientX - pos.x;
+    const sy = e.clientY - pos.y;
+    const onMove = (ev) => setPos({ x: ev.clientX - sx, y: ev.clientY - sy });
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }, [pos.x, pos.y]);
+  return { pos, onPointerDown };
+}
 import { useSpeech, applyVoiceCommands } from '../hooks/useSpeech.js';
 
 export default function VoiceModal({ box, onConfirm, onClose }) {
+  const { pos: dragPos, onPointerDown: onDragDown } = useDragPos();
   const { isListening, transcript, setTranscript, interimTranscript, error, start, stop, reset } =
     useSpeech();
   const [editText, setEditText] = useState(box.text || '');
@@ -59,8 +78,11 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
 
   return (
     <div className="voice-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="voice-modal">
-        <div className="voice-modal-header">
+      <div
+        className="voice-modal"
+        style={{ transform: `translate(${dragPos.x}px, ${dragPos.y}px)` }}
+      >
+        <div className="voice-modal-header" onPointerDown={onDragDown}>
           <h2>こたえをいってください</h2>
           <button className="voice-close-btn" onClick={onClose} aria-label="閉じる">
             ✕

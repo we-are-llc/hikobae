@@ -872,7 +872,7 @@ button:disabled {
 .voice-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -888,9 +888,9 @@ button:disabled {
 }
 
 .voice-modal {
-  background: rgba(255, 255, 255, 0.88);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
   border-radius: 20px 20px 0 0;
   padding: 16px 16px max(20px, calc(16px + var(--safe-bottom)));
   width: 100%;
@@ -898,7 +898,8 @@ button:disabled {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+  will-change: transform;
 }
 
 @media (min-width: 600px) {
@@ -912,6 +913,16 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  user-select: none;
+}
+
+@media (hover: hover) {
+  .voice-modal-header {
+    cursor: grab;
+  }
+  .voice-modal-header:active {
+    cursor: grabbing;
+  }
 }
 
 .voice-modal-header h2 {
