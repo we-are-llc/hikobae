@@ -948,6 +948,14 @@ button:disabled {
   border-color: var(--answer);
 }
 
+.voice-transcript.editable {
+  cursor: pointer;
+}
+
+.voice-transcript.editable:active {
+  background: rgba(255,255,255,0.9);
+}
+
 .voice-transcript-placeholder {
   color: var(--text-muted);
   font-size: 13px;

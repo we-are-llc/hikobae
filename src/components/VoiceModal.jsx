@@ -71,7 +71,10 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
         {phase === 'voice' ? (
           <>
             <div className="voice-transcript-wrap">
-              <div className={`voice-transcript ${isListening ? 'listening' : ''}`}>
+              <div
+                className={`voice-transcript ${isListening ? 'listening' : ''} ${editText ? 'editable' : ''}`}
+                onClick={editText ? handleEdit : undefined}
+              >
                 {editText || interimTranscript ? (
                   <>
                     {editText && <span>{editText}</span>}
@@ -108,9 +111,6 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
             <div className="voice-actions">
               <button className="btn-secondary" onClick={handleRedo}>
                 やり直し
-              </button>
-              <button className="btn-ghost" onClick={handleEdit}>
-                てで なおす
               </button>
               <button className="btn-green" onClick={handleConfirm} disabled={!editText}>
                 かくてい
