@@ -735,8 +735,8 @@ button:disabled {
 /* Delete button on box */
 .box-delete-btn {
   position: absolute;
-  top: -14px;
-  right: -14px;
+  top: -42px;
+  right: -8px;
   width: 30px;
   height: 30px;
   min-height: unset;

@@ -69,8 +69,8 @@ export default function Answer({ session, onNavigate, onUpdate }) {
 
       const newBox = {
         id: generateId(),
-        x: Math.max(0, Math.min(1 - DEFAULT_BOX_W, x - DEFAULT_BOX_W / 2)),
-        y: Math.max(0, Math.min(1 - DEFAULT_BOX_H, y - DEFAULT_BOX_H / 2)),
+        x: Math.max(0, Math.min(1 - DEFAULT_BOX_W, x)),
+        y: Math.max(0, Math.min(1 - DEFAULT_BOX_H, y)),
         width: DEFAULT_BOX_W,
         height: DEFAULT_BOX_H,
         text: '',
