@@ -35,6 +35,13 @@ export async function exportToPDF(session) {
   pdf.save(`${session.name || 'こたえ'}_${date}.pdf`);
 }
 
+const PDF_COLOR_MAP = {
+  green:  'rgba(16,185,129,0.5)',
+  blue:   'rgba(59,130,246,0.5)',
+  pink:   'rgba(236,72,153,0.5)',
+  yellow: 'rgba(234,179,8,0.5)',
+};
+
 function buildRenderWrapper(page) {
   const wrapper = document.createElement('div');
   wrapper.style.cssText =
@@ -67,7 +74,7 @@ function buildRenderWrapper(page) {
       `overflow:hidden`,
       `line-height:1.35`,
       `background:rgba(255,255,255,0.92)`,
-      `border:1px solid rgba(16,185,129,0.5)`,
+      `border:1px solid ${PDF_COLOR_MAP[box.color] || PDF_COLOR_MAP.green}`,
       `border-radius:3px`,
       `box-sizing:border-box`,
     ].join(';');
