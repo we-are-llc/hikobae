@@ -55,11 +55,10 @@ export default function AnswerBox({
     [mode, box.id, onAnswer]
   );
 
-  // edit mode: needs pointerdown to start drag immediately.
   const handlePointerDown = useCallback(
     (e) => {
       e.stopPropagation();
-      if (mode !== 'edit') return;
+      if (mode !== 'place') return;
 
       onSelect(box.id);
       const { fx: sx, fy: sy } = toFrac(e.clientX, e.clientY);
@@ -91,7 +90,7 @@ export default function AnswerBox({
   const handleResizeDown = useCallback(
     (e, handleId) => {
       e.stopPropagation();
-      if (mode !== 'edit') return;
+      if (mode !== 'place') return;
 
       const { fx: sx, fy: sy } = toFrac(e.clientX, e.clientY);
       const startBox = { ...box };
@@ -144,20 +143,15 @@ export default function AnswerBox({
 
   const colors = {
     place: {
-      border: '2px dashed #3B82F6',
-      background: 'rgba(59,130,246,0.06)',
-      labelBg: '#3B82F6',
+      border: isSelected ? `2px solid ${palette.main}` : `2px dashed ${palette.main}`,
+      background: palette.bg,
+      cursor: 'move',
+      labelBg: palette.main,
     },
     answer: {
       border: `2px solid ${box.text ? palette.main : '#94A3B8'}`,
       background: box.text ? palette.bg : 'rgba(255,255,255,0.75)',
       cursor: 'pointer',
-      labelBg: palette.main,
-    },
-    edit: {
-      border: isSelected ? `2px solid ${palette.main}` : `2px dashed ${palette.main}`,
-      background: palette.bg,
-      cursor: 'move',
       labelBg: palette.main,
     },
   };
@@ -196,8 +190,8 @@ export default function AnswerBox({
         )
       )}
 
-      {/* Edit mode controls */}
-      {mode === 'edit' && isSelected && (
+      {/* Edit controls (place mode, selected) */}
+      {mode === 'place' && isSelected && (
         <>
           <button
             className="box-delete-btn"

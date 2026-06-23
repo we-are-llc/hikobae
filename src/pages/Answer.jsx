@@ -57,8 +57,13 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         return;
       }
 
+      // 選択中のボックスがあれば選択解除のみ（新規作成しない）
+      if (selectedBoxId) {
+        setSelectedBoxId(null);
+        return;
+      }
+
       const rect = overlayRef.current.getBoundingClientRect();
-      // click events from touch always have valid clientX/Y — no need for touches[]
       const x = (e.clientX - rect.left) / rect.width;
       const y = (e.clientY - rect.top) / rect.height;
 
@@ -73,9 +78,10 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         color: 'green',
       };
 
+      setSelectedBoxId(newBox.id);
       updateSession((p) => ({ boxes: [...p.boxes, newBox] }));
     },
-    [mode, updateSession]
+    [mode, selectedBoxId, updateSession]
   );
 
   const handleBoxUpdate = useCallback(
@@ -188,7 +194,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
             className="answer-overlay"
             onClick={handleOverlayClick}
             style={{
-              cursor: mode === 'place' ? 'crosshair' : 'default',
+              cursor: mode === 'place' && !selectedBoxId ? 'crosshair' : 'default',
               touchAction: 'manipulation',
             }}
           >
