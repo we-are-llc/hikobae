@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { warpPerspective } from '../utils/perspective.js';
 import { saveSession } from '../utils/db.js';
+import { detectDocumentCorners } from '../utils/detectEdges.js';
 
 const COLORS = { tl: '#3B82F6', tr: '#10B981', br: '#F59E0B', bl: '#EF4444' };
 const LABELS = { tl: '左上', tr: '右上', br: '右下', bl: '左下' };
@@ -25,6 +26,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
   const [processing, setProcessing] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [rotatedImages, setRotatedImages] = useState({});
+  const [autoDetected, setAutoDetected] = useState(false);
   const imgRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -34,6 +36,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
   useEffect(() => {
     setCorners(initCorners());
     setImgLoaded(false);
+    setAutoDetected(false);
   }, [pageIdx]);
 
   const toFrac = useCallback((clientX, clientY) => {
@@ -74,6 +77,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
     setRotatedImages((prev) => ({ ...prev, [pageIdx]: canvas.toDataURL('image/png') }));
     setCorners(initCorners());
     setImgLoaded(false);
+    setAutoDetected(false);
   }, [imgLoaded, pageIdx]);
 
   const processPage = useCallback(async (skip) => {
@@ -132,7 +136,9 @@ export default function Crop({ name, rawPages, onNavigate }) {
       </div>
 
       <div className="crop-hint">
-        ● を 用紙の かどに あわせてください
+        {autoDetected
+          ? '✓ かどを じどうで みつけました。ずれていたら ● をうごかしてください'
+          : '● を 用紙の かどに あわせてください'}
       </div>
 
       <div className="crop-scroll">
@@ -143,7 +149,14 @@ export default function Crop({ name, rawPages, onNavigate }) {
             alt={`ページ ${pageIdx + 1}`}
             className="crop-image"
             draggable={false}
-            onLoad={() => setImgLoaded(true)}
+            onLoad={() => {
+              setImgLoaded(true);
+              const detected = detectDocumentCorners(imgRef.current);
+              if (detected) {
+                setCorners(detected);
+                setAutoDetected(true);
+              }
+            }}
           />
 
           {imgLoaded && (
