@@ -99,7 +99,7 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
           <>
             <div className="voice-transcript-wrap">
               <div
-                className={`voice-transcript ${isListening ? 'listening' : ''} editable`}
+                className="voice-transcript editable"
                 onClick={handleEdit}
                 role="button"
                 tabIndex={0}
@@ -115,7 +115,7 @@ export default function VoiceModal({ box, onConfirm, onClose }) {
                   </>
                 ) : (
                   <span className="voice-transcript-placeholder">
-                    {isListening ? 'はなしています...' : 'マイクをおしてはなして'}
+                    {isListening ? 'はなしています...' : 'ここをタップして手入力 / マイクで音声入力'}
                   </span>
                 )}
               </div>
