@@ -194,6 +194,14 @@ export default function AnswerBox({
       {mode === 'place' && isSelected && (
         <>
           <button
+            className="box-mic-btn"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => { e.stopPropagation(); onAnswer(box.id); }}
+            aria-label="音声入力"
+          >
+            🎙
+          </button>
+          <button
             className="box-delete-btn"
             onPointerDown={(e) => e.stopPropagation()}
             onClick={handleDelete}

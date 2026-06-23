@@ -751,6 +751,25 @@ button:disabled {
   line-height: 1;
 }
 
+/* Mic button on box (place mode, selected) */
+.box-mic-btn {
+  position: absolute;
+  top: -42px;
+  left: -8px;
+  width: 30px;
+  height: 30px;
+  min-height: unset;
+  padding: 0;
+  background: #10B981;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 15px;
+  z-index: 20;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  line-height: 1;
+}
+
 /* Font size controls on box */
 .box-fontsize-controls {
   position: absolute;
