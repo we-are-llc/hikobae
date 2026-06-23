@@ -49,7 +49,7 @@ function buildRenderWrapper(page) {
   img.crossOrigin = 'anonymous';
 
   const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:absolute;inset:0;pointer-events:none;';
+  overlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
 
   for (const box of page.boxes) {
     if (!box.text) continue;
@@ -60,8 +60,6 @@ function buildRenderWrapper(page) {
       `top:${box.y * 100}%`,
       `width:${box.width * 100}%`,
       `height:${box.height * 100}%`,
-      `display:flex`,
-      `align-items:flex-start`,
       `padding:2px 5px`,
       `font-size:13px`,
       `font-family:-apple-system,'Hiragino Kaku Gothic ProN',sans-serif`,
@@ -71,6 +69,7 @@ function buildRenderWrapper(page) {
       `background:rgba(255,255,255,0.92)`,
       `border:1px solid rgba(16,185,129,0.5)`,
       `border-radius:3px`,
+      `box-sizing:border-box`,
     ].join(';');
     el.textContent = box.text;
     overlay.appendChild(el);

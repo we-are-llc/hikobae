@@ -19,28 +19,31 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   const [saving, setSaving] = useState(false);
   const overlayRef = useRef(null);
   const saveTimerRef = useRef(null);
+  const sessionRef = useRef(session);
+  useEffect(() => { sessionRef.current = session; }, [session]);
 
   const currentPage = session.pages[pageIndex];
   const boxes = currentPage?.boxes ?? [];
 
+  // Functional update avoids stale-closure overwrites when answers are confirmed in quick succession
   const updateSession = useCallback(
     (updater) => {
-      const next = {
-        ...session,
-        pages: session.pages.map((p, i) =>
+      onUpdate((prev) => ({
+        ...prev,
+        pages: prev.pages.map((p, i) =>
           i === pageIndex ? { ...p, ...updater(p) } : p
         ),
-      };
-      onUpdate(next);
+        updatedAt: Date.now(),
+      }));
 
       clearTimeout(saveTimerRef.current);
       saveTimerRef.current = setTimeout(async () => {
         setSaving(true);
-        await saveSession(next).catch(console.error);
+        await saveSession(sessionRef.current).catch(console.error);
         setSaving(false);
       }, 800);
     },
-    [session, pageIndex, onUpdate]
+    [pageIndex, onUpdate]
   );
 
   useEffect(() => () => clearTimeout(saveTimerRef.current), []);
@@ -202,7 +205,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         <div className="answer-footer-spacer" />
         <button
           className="btn-green"
-          onClick={() => onNavigate('confirm', session)}
+          onClick={() => onNavigate('confirm', sessionRef.current)}
           disabled={totalBoxes === 0}
         >
           かくにん・しゅつりょく →
