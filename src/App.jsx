@@ -4,6 +4,7 @@ import Import from './pages/Import.jsx';
 import Crop from './pages/Crop.jsx';
 import Answer from './pages/Answer.jsx';
 import Confirm from './pages/Confirm.jsx';
+import About from './pages/About.jsx';
 
 export default function App() {
   const [page, setPage] = useState('home');
@@ -47,6 +48,8 @@ export default function App() {
       {page === 'confirm' && session && (
         <Confirm session={session} onNavigate={navigate} />
       )}
+
+      {page === 'about' && <About onNavigate={navigate} />}
     </div>
   );
 }
