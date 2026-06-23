@@ -888,9 +888,9 @@ button:disabled {
 }
 
 .voice-modal {
-  background: rgba(255, 255, 255, 0.48);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6) brightness(1.05);
-  backdrop-filter: blur(24px) saturate(1.6) brightness(1.05);
+  background: rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   border-radius: 20px 20px 0 0;
   padding: 16px 16px max(20px, calc(16px + var(--safe-bottom)));
   width: 100%;
@@ -898,7 +898,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 0 -2px 24px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.6);
+  box-shadow: 0 -2px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.4);
 }
 
 @media (min-width: 600px) {
@@ -927,6 +927,7 @@ button:disabled {
 .voice-modal-header h2 {
   font-size: 15px;
   font-weight: 700;
+  text-shadow: 0 1px 4px rgba(255,255,255,0.9);
 }
 
 .voice-close-btn {
@@ -945,7 +946,7 @@ button:disabled {
 
 .voice-transcript {
   min-height: 52px;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.45);
   border-radius: var(--radius-sm);
   padding: 10px 40px 10px 12px;
   font-size: 15px;
@@ -1075,7 +1076,7 @@ button:disabled {
   padding: 8px 10px;
   border: 2px solid var(--border);
   border-radius: var(--radius-sm);
-  background: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.45);
   color: var(--text);
   width: 100%;
   min-height: 52px;
