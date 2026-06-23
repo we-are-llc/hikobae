@@ -53,10 +53,9 @@ export default function Answer({ session, onNavigate, onUpdate }) {
       }
 
       const rect = overlayRef.current.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      const x = (clientX - rect.left) / rect.width;
-      const y = (clientY - rect.top) / rect.height;
+      // click events from touch always have valid clientX/Y — no need for touches[]
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
 
       const newBox = {
         id: generateId(),
@@ -173,16 +172,9 @@ export default function Answer({ session, onNavigate, onUpdate }) {
             ref={overlayRef}
             className="answer-overlay"
             onClick={handleOverlayClick}
-            onTouchEnd={
-              mode === 'place'
-                ? (e) => {
-                    e.preventDefault();
-                    handleOverlayClick(e);
-                  }
-                : undefined
-            }
             style={{
               cursor: mode === 'place' ? 'crosshair' : 'default',
+              touchAction: 'manipulation',
             }}
           >
             {boxes.map((box, i) => (
