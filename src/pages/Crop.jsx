@@ -8,8 +8,8 @@ const LABELS = { tl: '左上', tr: '右上', br: '右下', bl: '左下' };
 function initCorners() {
   return [
     { id: 'tl', x: 0.03, y: 0.03 },
-    { id: 'tr', x: 0.97, y: 0.03 },
-    { id: 'br', x: 0.97, y: 0.97 },
+    { id: 'tr', x: 0.88, y: 0.03 },
+    { id: 'br', x: 0.88, y: 0.97 },
     { id: 'bl', x: 0.03, y: 0.97 },
   ];
 }
@@ -24,11 +24,12 @@ export default function Crop({ name, rawPages, onNavigate }) {
   const [results, setResults] = useState([]);
   const [processing, setProcessing] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [rotatedImages, setRotatedImages] = useState({});
   const imgRef = useRef(null);
   const containerRef = useRef(null);
 
   const total = rawPages.length;
-  const currentImage = rawPages[pageIdx]?.imageData;
+  const currentImage = rotatedImages[pageIdx] ?? rawPages[pageIdx]?.imageData;
 
   useEffect(() => {
     setCorners(initCorners());
@@ -59,6 +60,21 @@ export default function Crop({ name, rawPages, onNavigate }) {
     el.addEventListener('pointermove', onMove);
     el.addEventListener('pointerup', onUp);
   }, [toFrac]);
+
+  const handleRotate = useCallback(() => {
+    if (!imgRef.current || !imgLoaded) return;
+    const img = imgRef.current;
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalHeight;
+    canvas.height = img.naturalWidth;
+    const ctx = canvas.getContext('2d');
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(Math.PI / 2);
+    ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+    setRotatedImages((prev) => ({ ...prev, [pageIdx]: canvas.toDataURL('image/png') }));
+    setCorners(initCorners());
+    setImgLoaded(false);
+  }, [imgLoaded, pageIdx]);
 
   const processPage = useCallback(async (skip) => {
     setProcessing(true);
@@ -174,6 +190,14 @@ export default function Crop({ name, rawPages, onNavigate }) {
           disabled={processing}
         >
           そのまま
+        </button>
+        <button
+          className="btn-secondary crop-rotate-btn"
+          onClick={handleRotate}
+          disabled={processing || !imgLoaded}
+          aria-label="右に90度回転"
+        >
+          ↻ まわす
         </button>
         <button
           className="btn-green"

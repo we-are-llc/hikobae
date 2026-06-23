@@ -1460,3 +1460,9 @@ button:disabled {
 .crop-footer button {
   flex: 1;
 }
+
+.crop-rotate-btn {
+  flex: 0 0 auto;
+  padding: 0 18px;
+  font-size: 18px;
+}
