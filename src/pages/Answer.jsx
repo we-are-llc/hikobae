@@ -113,46 +113,45 @@ export default function Answer({ session, onNavigate, onUpdate }) {
 
   return (
     <div className="answer-page">
-      {/* Header */}
+      {/* Header: 2行構成で小画面でも操作しやすく */}
       <div className="answer-header">
-        <button
-          className="btn-ghost"
-          onClick={() => onNavigate('home')}
-          style={{ flexShrink: 0 }}
-        >
-          ← ホーム
-        </button>
-        <div className="answer-header-title">{session.name}</div>
-
-        {session.pages.length > 1 && (
-          <div className="page-nav">
-            <button
-              onClick={() => setPageIndex((i) => Math.max(0, i - 1))}
-              disabled={pageIndex === 0}
-              aria-label="前のページ"
-            >
-              ‹
-            </button>
-            <span>
-              {pageIndex + 1} / {session.pages.length}
+        <div className="answer-header-row1">
+          <button
+            className="btn-ghost"
+            onClick={() => onNavigate('home')}
+            style={{ flexShrink: 0 }}
+          >
+            ← ホーム
+          </button>
+          <div className="answer-header-title">{session.name}</div>
+          {session.pages.length > 1 && (
+            <div className="page-nav">
+              <button
+                onClick={() => setPageIndex((i) => Math.max(0, i - 1))}
+                disabled={pageIndex === 0}
+                aria-label="前のページ"
+              >
+                ‹
+              </button>
+              <span>{pageIndex + 1} / {session.pages.length}</span>
+              <button
+                onClick={() => setPageIndex((i) => Math.min(session.pages.length - 1, i + 1))}
+                disabled={pageIndex === session.pages.length - 1}
+                aria-label="次のページ"
+              >
+                ›
+              </button>
+            </div>
+          )}
+          {saving && (
+            <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>
+              保存中…
             </span>
-            <button
-              onClick={() => setPageIndex((i) => Math.min(session.pages.length - 1, i + 1))}
-              disabled={pageIndex === session.pages.length - 1}
-              aria-label="次のページ"
-            >
-              ›
-            </button>
-          </div>
-        )}
-
-        <ModeBar mode={mode} onChange={handleModeChange} />
-
-        {saving && (
-          <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>
-            保存中…
-          </span>
-        )}
+          )}
+        </div>
+        <div className="answer-header-row2">
+          <ModeBar mode={mode} onChange={handleModeChange} />
+        </div>
       </div>
 
       {/* Mode hint */}

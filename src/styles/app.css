@@ -24,6 +24,9 @@
   --touch: 48px;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  /* システムナビゲーションバー・ノッチの余白 */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
 }
 
 html,
@@ -118,7 +121,7 @@ button:disabled {
   justify-content: center;
   gap: 32px;
   flex: 1;
-  padding: 32px 24px;
+  padding: 32px 24px max(32px, calc(32px + var(--safe-bottom)));
 }
 
 .home-logo {
@@ -357,7 +360,7 @@ button:disabled {
 .import-footer {
   display: flex;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 16px 20px max(16px, calc(16px + var(--safe-bottom)));
   border-top: 1px solid var(--border);
   background: var(--surface);
 }
@@ -376,13 +379,21 @@ button:disabled {
 
 .answer-header {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
+  flex-direction: column;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
-  flex-wrap: wrap;
+}
+
+.answer-header-row1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 6px;
+}
+
+.answer-header-row2 {
+  padding: 0 12px 8px;
 }
 
 .answer-header-title {
@@ -390,7 +401,6 @@ button:disabled {
   font-weight: 600;
   color: var(--text-muted);
   flex: 1;
-  min-width: 80px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -427,7 +437,7 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
+  padding: 10px 14px max(10px, calc(10px + var(--safe-bottom)));
   background: var(--surface);
   border-top: 1px solid var(--border);
   flex-shrink: 0;
@@ -445,6 +455,7 @@ button:disabled {
   border-radius: var(--radius);
   padding: 3px;
   border: 1px solid var(--border);
+  width: 100%;
 }
 
 .mode-btn {
@@ -613,7 +624,7 @@ button:disabled {
 .voice-modal {
   background: var(--surface);
   border-radius: 24px 24px 0 0;
-  padding: 24px 24px 32px;
+  padding: 24px 24px max(32px, calc(32px + var(--safe-bottom)));
   width: 100%;
   max-width: 480px;
   display: flex;
@@ -856,7 +867,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 16px 20px;
+  padding: 16px 20px max(16px, calc(16px + var(--safe-bottom)));
   background: var(--surface);
   border-top: 1px solid var(--border);
   flex-shrink: 0;
@@ -907,7 +918,7 @@ button:disabled {
 .sessions-modal {
   background: var(--surface);
   border-radius: 24px 24px 0 0;
-  padding: 24px 20px 32px;
+  padding: 24px 20px max(32px, calc(32px + var(--safe-bottom)));
   width: 100%;
   max-width: 480px;
   display: flex;
