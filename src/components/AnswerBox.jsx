@@ -155,10 +155,10 @@ export default function AnswerBox({
       labelBg: palette.main,
     },
     edit: {
-      border: isSelected ? `2px solid ${palette.main}` : '2px dashed #CBD5E1',
-      background: isSelected ? palette.bg : 'rgba(255,255,255,0.55)',
+      border: isSelected ? `2px solid ${palette.main}` : `2px dashed ${palette.main}`,
+      background: palette.bg,
       cursor: 'move',
-      labelBg: isSelected ? palette.main : '#94A3B8',
+      labelBg: palette.main,
     },
   };
 
