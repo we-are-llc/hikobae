@@ -37,42 +37,47 @@ export default function AnswerBox({
     [overlayRef]
   );
 
+  // answer mode: use onClick so the modal opens only after a complete tap,
+  // preventing the residual click from immediately closing the modal overlay.
+  const handleClick = useCallback(
+    (e) => {
+      e.stopPropagation();
+      if (mode === 'answer') onAnswer(box.id);
+    },
+    [mode, box.id, onAnswer]
+  );
+
+  // edit mode: needs pointerdown to start drag immediately.
   const handlePointerDown = useCallback(
     (e) => {
       e.stopPropagation();
+      if (mode !== 'edit') return;
 
-      if (mode === 'answer') {
-        onAnswer(box.id);
-        return;
-      }
+      onSelect(box.id);
+      const { fx: sx, fy: sy } = toFrac(e.clientX, e.clientY);
+      const startBox = { ...box };
 
-      if (mode === 'edit') {
-        onSelect(box.id);
-        const { fx: sx, fy: sy } = toFrac(e.clientX, e.clientY);
-        const startBox = { ...box };
+      const onMove = (ev) => {
+        const { fx, fy } = toFrac(ev.clientX, ev.clientY);
+        const dx = fx - sx;
+        const dy = fy - sy;
+        onUpdate({
+          ...startBox,
+          x: Math.max(0, Math.min(1 - startBox.width, startBox.x + dx)),
+          y: Math.max(0, Math.min(1 - startBox.height, startBox.y + dy)),
+        });
+      };
 
-        const onMove = (ev) => {
-          const { fx, fy } = toFrac(ev.clientX, ev.clientY);
-          const dx = fx - sx;
-          const dy = fy - sy;
-          onUpdate({
-            ...startBox,
-            x: Math.max(0, Math.min(1 - startBox.width, startBox.x + dx)),
-            y: Math.max(0, Math.min(1 - startBox.height, startBox.y + dy)),
-          });
-        };
+      const onUp = () => {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+      };
 
-        const onUp = () => {
-          window.removeEventListener('pointermove', onMove);
-          window.removeEventListener('pointerup', onUp);
-        };
-
-        window.addEventListener('pointermove', onMove);
-        window.addEventListener('pointerup', onUp);
-        e.currentTarget.setPointerCapture(e.pointerId);
-      }
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+      e.currentTarget.setPointerCapture(e.pointerId);
     },
-    [mode, box, onAnswer, onSelect, onUpdate, toFrac]
+    [mode, box, onSelect, onUpdate, toFrac]
   );
 
   const handleResizeDown = useCallback(
@@ -161,6 +166,7 @@ export default function AnswerBox({
         background: c.background,
         cursor: c.cursor || 'default',
       }}
+      onClick={handleClick}
       onPointerDown={handlePointerDown}
     >
       {/* Label */}
