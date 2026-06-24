@@ -83,6 +83,15 @@ export default function Home({ onNavigate }) {
         </a>
         <span className="home-footer-sep">·</span>
         <a
+          className="home-about-link"
+          href="https://hikobae.we-re.net/manual.html"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          つかいかた
+        </a>
+        <span className="home-footer-sep">·</span>
+        <a
           className="home-about-link home-bug-link"
           href="https://github.com/we-are-llc/hikobae/issues/new"
           target="_blank"

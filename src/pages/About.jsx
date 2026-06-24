@@ -60,6 +60,16 @@ export default function About({ onNavigate }) {
               </div>
             </li>
           </ol>
+          <p style={{ marginTop: 16 }}>
+            <a
+              href="https://hikobae.we-re.net/manual.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="about-link"
+            >
+              くわしいマニュアルを見る →
+            </a>
+          </p>
         </section>
 
         <section className="about-section">
