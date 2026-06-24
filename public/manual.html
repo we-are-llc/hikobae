@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ひこばえ 操作マニュアル</title>
+<style>
+:root{
+  --bg:#F8F7F4; --surface:#FFFFFF; --border:#E2E0DC;
+  --text:#1A1A1A; --muted:#6B7280;
+  --place:#3B82F6; --place-bg:rgba(59,130,246,0.08);
+  --answer:#10B981; --answer-bg:rgba(16,185,129,0.08);
+  --danger:#EF4444;
+  --radius:16px; --radius-sm:10px;
+  --shadow:0 2px 10px rgba(0,0,0,0.06);
+  --shadow-lg:0 12px 30px rgba(0,0,0,0.10);
+  --maxw:920px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:-apple-system,'Hiragino Kaku Gothic ProN','Noto Sans JP','Hiragino Sans','Yu Gothic',sans-serif;
+  line-height:1.75; -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+a{color:var(--place)}
+
+/* ===== Sticky nav ===== */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  background:rgba(248,247,244,0.92); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.topbar-inner{
+  max-width:var(--maxw); margin:0 auto; padding:10px 20px;
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+}
+.topbar .brand{font-weight:700;font-size:17px;display:flex;align-items:center;gap:8px}
+.topbar nav{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.topbar nav a{
+  font-size:13px; text-decoration:none; color:var(--muted);
+  padding:5px 11px; border-radius:999px; white-space:nowrap;
+}
+.topbar nav a:hover{background:var(--place-bg); color:var(--place)}
+
+/* ===== Hero ===== */
+.hero{
+  max-width:var(--maxw); margin:0 auto; padding:64px 20px 36px; text-align:center;
+}
+.hero .leaf{font-size:64px;line-height:1}
+.hero h1{font-size:34px;font-weight:700;margin:14px 0 6px;letter-spacing:.02em}
+.hero .beta{
+  display:inline-block;font-size:12px;font-weight:700;color:#fff;background:var(--answer);
+  padding:2px 10px;border-radius:999px;margin-left:6px;vertical-align:middle;
+}
+.hero p.lead{font-size:17px;color:var(--muted);max-width:620px;margin:10px auto 0}
+.hero .cta{
+  display:inline-flex;align-items:center;gap:8px;margin-top:26px;
+  background:var(--place);color:#fff;text-decoration:none;font-weight:700;font-size:16px;
+  padding:14px 30px;border-radius:999px;box-shadow:var(--shadow);
+}
+.hero .cta:hover{filter:brightness(1.05)}
+
+/* ===== Section wrapper ===== */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+.section-title{font-size:24px;font-weight:700;margin:8px 0 4px}
+.section-sub{color:var(--muted);font-size:15px;margin-bottom:22px}
+
+/* ===== Feature chips (overview) ===== */
+.intro{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:26px;box-shadow:var(--shadow);margin:10px 0 8px}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:18px}
+.feat{display:flex;gap:10px;align-items:flex-start}
+.feat .ico{font-size:22px;line-height:1.3}
+.feat b{display:block;font-size:14.5px}
+.feat span{font-size:13px;color:var(--muted)}
+
+/* ===== Flow strip ===== */
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;margin:30px 0 6px}
+.flow .step-pill{
+  display:flex;align-items:center;gap:8px;background:var(--surface);
+  border:1px solid var(--border);border-radius:999px;padding:8px 16px;font-size:14px;font-weight:600;
+}
+.flow .step-pill .n{
+  display:inline-flex;width:22px;height:22px;border-radius:50%;background:var(--place);color:#fff;
+  font-size:12px;align-items:center;justify-content:center;font-weight:700;
+}
+.flow .arrow{color:var(--muted);font-size:18px}
+
+/* ===== Steps ===== */
+.steps{margin:42px 0}
+.step{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:30px;margin-bottom:30px;
+  display:grid;grid-template-columns:1fr 300px;gap:34px;align-items:start;scroll-margin-top:80px;
+}
+.step:nth-child(even){grid-template-columns:300px 1fr}
+.step:nth-child(even) .step-body{order:2}
+.step:nth-child(even) .shot{order:1}
+.step-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.step-num{
+  flex:none;width:40px;height:40px;border-radius:12px;background:var(--place);color:#fff;
+  font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;
+}
+.step h3{font-size:20px;font-weight:700}
+.step .yomi{font-size:13px;color:var(--muted);font-weight:600}
+.step-body p{margin:12px 0;font-size:15.5px}
+.step-body ul{list-style:none;margin:14px 0 0}
+.step-body li{position:relative;padding:6px 0 6px 26px;font-size:14.5px}
+.step-body li::before{content:"✓";position:absolute;left:0;top:6px;color:var(--answer);font-weight:700}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:6px;vertical-align:middle}
+.tag.blue{background:var(--place-bg);color:var(--place)}
+.tag.green{background:var(--answer-bg);color:var(--answer)}
+.tag.red{background:rgba(239,68,68,0.1);color:var(--danger)}
+
+/* phone frame */
+.shot{justify-self:center}
+.phone{
+  border:8px solid #1d1d1f;border-radius:30px;overflow:hidden;background:#1d1d1f;
+  box-shadow:var(--shadow-lg);max-width:280px;
+}
+.phone img{border-radius:0}
+.shot .cap{text-align:center;font-size:12.5px;color:var(--muted);margin-top:10px}
+
+/* callout */
+.note{
+  background:var(--place-bg);border-left:4px solid var(--place);border-radius:var(--radius-sm);
+  padding:14px 18px;margin:16px 0;font-size:14px;
+}
+.note.green{background:var(--answer-bg);border-left-color:var(--answer)}
+
+/* ===== Tips / FAQ ===== */
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:8px 0 10px}
+.tip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.tip h4{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.tip p{font-size:14px;color:var(--muted)}
+
+/* ===== Footer ===== */
+footer{margin-top:60px;background:var(--surface);border-top:1px solid var(--border);padding:40px 20px}
+footer .fwrap{max-width:var(--maxw);margin:0 auto;text-align:center}
+footer .links{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+footer .links a{font-size:14px;font-weight:600;text-decoration:none}
+footer small{color:var(--muted);font-size:12.5px;line-height:1.9;display:block}
+
+@media(max-width:760px){
+  .step,.step:nth-child(even){grid-template-columns:1fr}
+  .step:nth-child(even) .step-body{order:2}
+  .step:nth-child(even) .shot{order:1}
+  .shot{order:-1}
+  .hero h1{font-size:28px}
+  .topbar .brand{font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">🌱 ひこばえ 操作マニュアル</div>
+    <nav>
+      <a href="#step1">①ひらく</a>
+      <a href="#step2">②とりこむ</a>
+      <a href="#step3">③補正</a>
+      <a href="#step4">④解答欄</a>
+      <a href="#step5">⑤声で答える</a>
+      <a href="#step6">⑥保存</a>
+      <a href="#tips">こまったとき</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="leaf">🌱</div>
+  <h1>ひこばえ<span class="beta">β</span></h1>
+  <p class="lead">書くことが苦手なお子さんが、問題用紙を「撮って・声で答えて・PDFで提出」できる学習支援アプリです。このページでは、はじめての方でも迷わないように、操作の流れをひとつずつ画面つきで説明します。</p>
+  <a class="cta" href="https://hikobae.we-re.net/" target="_blank" rel="noopener noreferrer">ひこばえを使ってみる →</a>
+</section>
+
+<div class="wrap">
+
+  <!-- Intro -->
+  <div class="intro">
+    <h2 class="section-title">ひこばえでできること</h2>
+    <p class="section-sub">インストール不要。ブラウザで開くだけで使えます。</p>
+    <div class="feat-grid">
+      <div class="feat"><span class="ico">📷</span><div><b>用紙をスキャン</b><span>写真やPDFを取り込み</span></div></div>
+      <div class="feat"><span class="ico">📐</span><div><b>台形補正</b><span>傾いた写真もまっすぐに</span></div></div>
+      <div class="feat"><span class="ico">✏️</span><div><b>解答欄を配置</b><span>タップで自由に追加</span></div></div>
+      <div class="feat"><span class="ico">🎙️</span><div><b>音声で入力</b><span>話すだけで答えを記入</span></div></div>
+      <div class="feat"><span class="ico">📄</span><div><b>PDFで保存</b><span>用紙と答えをまとめて</span></div></div>
+      <div class="feat"><span class="ico">🔒</span><div><b>プライバシー</b><span>データは端末内だけ</span></div></div>
+    </div>
+  </div>
+
+  <!-- Flow overview -->
+  <div class="flow">
+    <span class="step-pill"><span class="n">1</span>ひらく</span><span class="arrow">→</span>
+    <span class="step-pill"><span class="n">2</span>とりこむ</span><span class="arrow">→</span>
+    <span class="step-pill"><span class="n">3</span>補正</span><span class="arrow">→</span>
+    <span class="step-pill"><span class="n">4</span>解答欄</span><span class="arrow">→</span>
+    <span class="step-pill"><span class="n">5</span>声で答える</span><span class="arrow">→</span>
+    <span class="step-pill"><span class="n">6</span>保存</span>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps">
+
+    <!-- STEP 1 -->
+    <div class="step" id="step1">
+      <div class="step-body">
+        <div class="step-head">
+          <div class="step-num">1</div>
+          <div><h3>アプリをひらく</h3><div class="yomi">ホーム画面</div></div>
+        </div>
+        <p>ブラウザで <a href="https://hikobae.we-re.net/" target="_blank" rel="noopener noreferrer">hikobae.we-re.net</a> を開きます。最初の画面で <b>「あたらしく とりこむ」</b> をおして始めます。</p>
+        <ul>
+          <li><b>あたらしく とりこむ</b>：新しい問題用紙を取り込みます</li>
+          <li><b>つづきから</b>：前回の続きを再開します（保存があるとき）</li>
+          <li>下の「このアプリについて／不具合を報告する」から説明や連絡ができます</li>
+        </ul>
+      </div>
+      <div class="shot"><div class="phone"><img src="images/01_home.jpg" alt="ホーム画面"></div><div class="cap">最初のホーム画面</div></div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step" id="step2">
+      <div class="step-body">
+        <div class="step-head">
+          <div class="step-num">2</div>
+          <div><h3>問題用紙をとりこむ</h3><div class="yomi">画像・PDFの読み込み</div></div>
+        </div>
+        <p>点線の枠を<b>タップ</b>すると、カメラ撮影か写真の選択ができます。対応形式は <b>JPEG・PNG・PDF</b>。複数枚・複数ページもまとめて取り込めます。</p>
+        <ul>
+          <li>「＋ もっとついかする」で何枚でも追加できます</li>
+          <li>「なまえ」に分かりやすい名前（例：しゅくだい1）を入れておくと、あとで探しやすくなります</li>
+          <li>用意ができたら <span class="tag blue">つぎへ（台形補正）→</span></li>
+        </ul>
+      </div>
+      <div class="shot"><div class="phone"><img src="images/03_import_named.jpg" alt="取り込み画面"></div><div class="cap">2ページ取り込み・名前を入力した状態</div></div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step" id="step3">
+      <div class="step-body">
+        <div class="step-head">
+          <div class="step-num">3</div>
+          <div><h3>よみとり範囲を合わせる</h3><div class="yomi">台形補正</div></div>
+        </div>
+        <p>用紙の四すみを、<b>4色の丸（左上＝青・右上＝緑・右下＝オレンジ・左下＝赤）</b>に合わせます。多くの場合、かどは自動で検出されるので、ずれていたらドラッグで微調整するだけです。</p>
+        <ul>
+          <li><span class="tag">↻ まわす</span>：用紙が横向きのとき90°回転</li>
+          <li><span class="tag">そのまま</span>：補正せず次へ</li>
+          <li><span class="tag green">きりとる →</span>：補正して次のページ／作業画面へ</li>
+        </ul>
+        <div class="note">複数ページのときは右上に「1/2」のように表示されます。最後のページでは「はじめる →」に変わります。</div>
+      </div>
+      <div class="shot"><div class="phone"><img src="images/04_crop.jpg" alt="台形補正画面"></div><div class="cap">四すみのハンドルで範囲を調整</div></div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step" id="step4">
+      <div class="step-body">
+        <div class="step-head">
+          <div class="step-num">4</div>
+          <div><h3>解答欄をつくる</h3><div class="yomi">ばしょをつくる（配置モード）</div></div>
+        </div>
+        <p>上のバーで <span class="tag blue">✏️ ばしょをつくる</span> を選びます。答えを書きたい場所を<b>タップ</b>すると解答欄ができます。ドラッグで移動、四すみ・辺の□でサイズ変更ができます。</p>
+        <ul>
+          <li>解答欄をえらぶと、🎙（音声）・🗑（削除）・「⚙ もっと」が出ます</li>
+          <li>「⚙ もっと」で <b>文字サイズ</b>（ぁ小／あ大）と <b>色</b>（緑・青・ピンク・黄）を変えられます</li>
+          <li>下の <span class="tag">↩ もどす</span> で直前の操作をやり直せます</li>
+        </ul>
+        <div class="note green">慣れないうちは、まず全部の解答欄を配置 → そのあと声で答える、の順がおすすめです。</div>
+      </div>
+      <div class="shot"><div class="phone"><img src="images/07_controls.jpg" alt="解答欄の操作"></div><div class="cap">解答欄を選ぶと操作ボタンが表示</div></div>
+    </div>
+
+    <!-- STEP 4b palette (small extra) -->
+    <div class="step" id="step4b">
+      <div class="step-body">
+        <div class="step-head">
+          <div class="step-num">4</div>
+          <div><h3>色と文字サイズを変える</h3><div class="yomi">⚙ もっと</div></div>
+        </div>
+        <p>「⚙ もっと」を開くと、文字サイズのボタン（<b>ぁ＝小さく／あ＝大きく</b>）と、4色のカラーパレットが出ます。問題ごとに色分けすると見やすくなります。</p>
+        <ul>
+          <li>色は <b>緑・青・ピンク・黄</b> の4色</li>
+          <li>「▲ とじる」でパレットを閉じます</li>
+        </ul>
+      </div>
+      <div class="shot"><div class="phone"><img src="images/08_palette.jpg" alt="色と文字サイズの変更"></div><div class="cap">カラーパレットと文字サイズ</div></div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step" id="step5">
+      <div class="step-body">
+        <div class="step-head">
+          <div class="step-num">5</div>
+          <div><h3>声で答える</h3><div class="yomi">こたえをいれる（解答モード）＋ 音声入力</div></div>
+        </div>
+        <p>上のバーで <span class="tag green">🎙️ こたえをいれる</span> を選ぶと、解答欄に「タップ」と表示されます。答えたい欄をタップすると、音声入力の画面が開きます。</p>
+        <ul>
+          <li>マイクボタンをおして <b>話すだけ</b>で文字になります</li>
+          <li>「まる」→「。」、「かいぎょう」→改行 など、声のコマンドにも対応</li>
+          <li>📋コピー／🔊読み上げ／✏手入力 に切り替え可能</li>
+          <li>よければ <span class="tag green">かくてい</span>、やり直すときは <span class="tag">やり直し</span></li>
+        </ul>
+        <div class="note">音声認識は Chrome・Edge で安定して動きます。うまく聞き取れないときは「✏ 手入力」で直接タイプできます。</div>
+      </div>
+      <div class="shot"><div class="phone"><img src="images/10_voice.jpg" alt="音声入力画面"></div><div class="cap">話した言葉がそのまま文字に</div></div>
+    </div>
+
+    <!-- STEP 5b filled -->
+    <div class="step" id="step5b">
+      <div class="step-body">
+        <div class="step-head">
+          <div class="step-num">5</div>
+          <div><h3>全部の答えを入れる</h3><div class="yomi">進捗カウンター</div></div>
+        </div>
+        <p>答えた数は下に「12 / 20 こたえた」のように表示されます。全部入れ終わると <b>「◎ ぜんぶ こたえた！」</b> のお祝いが出ます。入力中は自動で保存されるので、途中でやめても大丈夫です。</p>
+        <ul>
+          <li>わからない問題は「分からない」と答えてもOK</li>
+          <li>すべて終わったら <span class="tag green">だす →</span> で確認画面へ</li>
+        </ul>
+      </div>
+      <div class="shot"><div class="phone"><img src="images/11_filled.jpg" alt="解答が入った状態"></div><div class="cap">答えが入った状態</div></div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step" id="step6">
+      <div class="step-body">
+        <div class="step-head">
+          <div class="step-num">6</div>
+          <div><h3>確認してPDFで保存する</h3><div class="yomi">かくにん・しゅつりょく</div></div>
+        </div>
+        <p>確認画面では、ページごとに答えの一覧が見られます。内容をチェックして、最後に <span class="tag green">PDFにしてほぞん</span> をおすと、用紙の画像に答えが重なったPDFがダウンロードされます。</p>
+        <ul>
+          <li><b>よみあげる</b>：すべての答えを音声で読み上げて確認</li>
+          <li>ファイル名は「なまえ_日付.pdf」で保存されます</li>
+          <li>保存したPDFはメールやアプリで先生に提出できます</li>
+        </ul>
+      </div>
+      <div class="shot"><div class="phone"><img src="images/12_confirm.jpg" alt="確認・PDF保存画面"></div><div class="cap">答えの一覧とPDF保存ボタン</div></div>
+    </div>
+
+    <!-- Result PDF -->
+    <div class="step" id="result">
+      <div class="step-body">
+        <div class="step-head">
+          <div class="step-num">✓</div>
+          <div><h3>できあがり</h3><div class="yomi">出力されたPDF</div></div>
+        </div>
+        <p>こうして、元の問題用紙のレイアウトはそのままに、答えだけがきれいに入ったPDFができあがります。書くのが苦手でも、「考えること」に集中して提出できます。</p>
+      </div>
+      <div class="shot"><div class="phone"><img src="images/13_pdf.jpg" alt="出力されたPDF"></div><div class="cap">用紙＋答えのPDF（複数ページ対応）</div></div>
+    </div>
+
+  </div><!-- /steps -->
+
+  <!-- Tips -->
+  <h2 class="section-title" id="tips">こまったとき・よくある質問</h2>
+  <p class="section-sub">使うまえに知っておくと安心なこと。</p>
+  <div class="tips">
+    <div class="tip"><h4>🔒 データは安全？</h4><p>画像も答えもすべて<b>端末の中だけ</b>に保存され、どこにも送信されません。ブラウザのデータを消すと完全に削除されます。</p></div>
+    <div class="tip"><h4>📶 ネットがなくても使える？</h4><p>取り込み後はオフラインでも動作します。サーバー通信はゼロの設計です。</p></div>
+    <div class="tip"><h4>🎙️ 声が認識されない</h4><p>音声入力は <b>Chrome・Edge</b> が安定。マイクの許可を確認し、難しければ「✏ 手入力」を使ってください。</p></div>
+    <div class="tip"><h4>↩ まちがえた</h4><p>配置モードの「もどす」で最大20回やり直せます。解答欄は🗑で削除、内容は何度でも入れ直せます。</p></div>
+    <div class="tip"><h4>📱 どの端末で使える？</h4><p>スマホ・タブレット・パソコンに対応。保護者や先生が代わりに操作してもOKです。</p></div>
+    <div class="tip"><h4>🐛 不具合を見つけた</h4><p>ホーム下の「不具合を報告する」または <a href="https://github.com/we-are-llc/hikobae/issues/new" target="_blank" rel="noopener noreferrer">GitHub Issues</a> からご連絡ください。</p></div>
+  </div>
+
+</div><!-- /wrap -->
+
+<footer>
+  <div class="fwrap">
+    <div class="links">
+      <a href="https://hikobae.we-re.net/" target="_blank" rel="noopener noreferrer">ひこばえを使う</a>
+      <a href="https://hikobae.we-re.net/lp.html" target="_blank" rel="noopener noreferrer">アプリ紹介ページ</a>
+      <a href="https://github.com/we-are-llc/hikobae/issues/new" target="_blank" rel="noopener noreferrer">不具合を報告する</a>
+    </div>
+    <small>
+      🌱 ひこばえ / Hikobae — 書字が苦手な子どもたちのための学習支援WEBアプリ（β版）<br>
+      開発・運営：ウィアー合同会社　<a href="https://we-re.net/" target="_blank" rel="noopener noreferrer">we-re.net</a><br>
+      Copyright © 2026 We are, LLC. All rights reserved.
+    </small>
+  </div>
+</footer>
+
+</body>
+</html>
