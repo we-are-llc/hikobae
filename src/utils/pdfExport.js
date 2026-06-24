@@ -84,21 +84,29 @@ function drawAnswerBox(ctx, box, W, H) {
   const y  = box.y      * H;
   const bw = box.width  * W;
   const bh = box.height * H;
-  const color    = COLOR_MAP[box.color] || COLOR_MAP.green;
-  const fontSize = box.fontSize || 14;
-  const PAD_X    = 5;
-  const PAD_Y    = 3;
+  const color = COLOR_MAP[box.color] || COLOR_MAP.green;
+
+  // box.fontSize はスクリーン上の CSS ピクセル値（14〜36px）。
+  // PDF canvas はナチュラル画像サイズ（2000〜3000px 幅）で描画するため、
+  // スマホ基準幅（420px）に対する比率でスケールして文字の見た目を合わせる。
+  const SCREEN_REF_W = 420;
+  const pxScale = W / SCREEN_REF_W;
+  const fontSize = (box.fontSize || 14) * pxScale;
+  const PAD_X    = 5 * pxScale;
+  const PAD_Y    = 3 * pxScale;
   const lineH    = fontSize * 1.35;
 
+  const radius    = 3 * pxScale;
+
   // 背景（角丸）
-  roundedRect(ctx, x, y, bw, bh, 3);
+  roundedRect(ctx, x, y, bw, bh, radius);
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
   ctx.fill();
 
   // 枠線
   ctx.strokeStyle = color;
-  ctx.lineWidth   = 1;
-  roundedRect(ctx, x, y, bw, bh, 3);
+  ctx.lineWidth   = 1.5 * pxScale;
+  roundedRect(ctx, x, y, bw, bh, radius);
   ctx.stroke();
 
   // テキスト（クリッピング付き）
