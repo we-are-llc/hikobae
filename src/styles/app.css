@@ -1435,6 +1435,8 @@ button:disabled {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   background: #1c1c1c;
+  /* スマホのスワイプ領域（戻るジェスチャー等）とハンドルが被らないよう余白を確保 */
+  padding: 8px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
 }
 
 .crop-container {
