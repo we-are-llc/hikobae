@@ -75,6 +75,38 @@ export default function About({ onNavigate }) {
         </section>
 
         <section className="about-section">
+          <h2>更新履歴</h2>
+          <div className="about-changelog">
+            <div className="about-changelog-entry">
+              <div className="about-changelog-date">2026-06-24</div>
+              <ul className="about-changelog-list">
+                <li>複数ページの読み上げで、ページをまたぐと番号がリセットされなかった不具合を修正</li>
+                <li>PDF保存で画像の下部が切れていた不具合を修正</li>
+              </ul>
+            </div>
+            <div className="about-changelog-entry">
+              <div className="about-changelog-date">2026-06-23</div>
+              <ul className="about-changelog-list">
+                <li>台形補正で用紙のかどを自動検出する機能を追加</li>
+                <li>台形補正画面に画像回転ボタンを追加</li>
+                <li>回答欄の操作を元に戻す「もどす」機能を追加</li>
+                <li>削除確認をアプリ内ダイアログに変更（OS標準のアラートを廃止）</li>
+                <li>音声入力画面を半透明化・デスクトップでのドラッグ移動に対応</li>
+                <li>回答欄の色・文字サイズ変更機能を追加</li>
+                <li>確認画面に全回答の読み上げ機能を追加</li>
+                <li>ホーム画面に不具合報告リンクを追加</li>
+              </ul>
+            </div>
+            <div className="about-changelog-entry">
+              <div className="about-changelog-date">2026-06-22</div>
+              <ul className="about-changelog-list">
+                <li>β版公開</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section className="about-section">
           <h2>お問い合わせ</h2>
           <p>開発：ウィアー合同会社 <a href="https://www.we-re.net/" target="_blank" rel="noopener noreferrer">we-re.net</a></p>
           <p>

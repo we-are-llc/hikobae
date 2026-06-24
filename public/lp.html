@@ -86,6 +86,39 @@ header p {
     background: #3e8f59;
 }
 
+.changelog {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.changelog-entry {
+    border-left: 3px solid #e2e0dc;
+    padding-left: 16px;
+}
+
+.changelog-date {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #888;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+}
+
+.changelog-list {
+    margin: 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.changelog-list li {
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.6;
+}
+
 footer {
     text-align: center;
     padding: 30px 10px;
@@ -176,6 +209,38 @@ footer {
         <a href="https://hikobae.we-re.net/" target="_blank" rel="noopener noreferrer">
             ひこばえを使ってみる
         </a>
+    </div>
+
+    <div class="section">
+        <h2>更新履歴</h2>
+        <div class="changelog">
+            <div class="changelog-entry">
+                <div class="changelog-date">2026-06-24</div>
+                <ul class="changelog-list">
+                    <li>複数ページの読み上げで、ページをまたぐと番号がリセットされなかった不具合を修正</li>
+                    <li>PDF保存で画像の下部が切れていた不具合を修正</li>
+                </ul>
+            </div>
+            <div class="changelog-entry">
+                <div class="changelog-date">2026-06-23</div>
+                <ul class="changelog-list">
+                    <li>台形補正で用紙のかどを自動検出する機能を追加</li>
+                    <li>台形補正画面に画像回転ボタンを追加</li>
+                    <li>回答欄の操作を元に戻す「もどす」機能を追加</li>
+                    <li>削除確認をアプリ内ダイアログに変更</li>
+                    <li>音声入力画面を半透明化・デスクトップでのドラッグ移動に対応</li>
+                    <li>回答欄の色・文字サイズ変更機能を追加</li>
+                    <li>確認画面に全回答の読み上げ機能を追加</li>
+                    <li>ホーム画面に不具合報告リンクを追加</li>
+                </ul>
+            </div>
+            <div class="changelog-entry">
+                <div class="changelog-date">2026-06-22</div>
+                <ul class="changelog-list">
+                    <li>β版公開</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
 </div>

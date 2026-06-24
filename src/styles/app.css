@@ -304,6 +304,39 @@ button:disabled {
   color: var(--text-muted);
 }
 
+.about-changelog {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.about-changelog-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.about-changelog-date {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.about-changelog-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.about-changelog-list li {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
 /* ===== Sessions list ===== */
 .sessions-list {
   display: flex;
