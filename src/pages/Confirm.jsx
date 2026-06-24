@@ -14,13 +14,23 @@ export default function Confirm({ session, onNavigate }) {
   const handleReadAloud = useCallback(() => {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-    const text = answered.map((b, i) => `${i + 1}番。${b.text}`).join('。');
+
+    // ページごとに番号をリセットし、複数ページの場合は「ページN」を前置
+    const segments = [];
+    session.pages.forEach((page, pi) => {
+      const pageAnswered = page.boxes.filter((b) => b.text);
+      if (pageAnswered.length === 0) return;
+      if (session.pages.length > 1) segments.push(`ページ${pi + 1}`);
+      pageAnswered.forEach((b, bi) => segments.push(`${bi + 1}番。${b.text}`));
+    });
+
+    const text = segments.join('。');
     if (!text) return;
     const utt = new SpeechSynthesisUtterance(text);
     utt.lang = 'ja-JP';
     utt.rate = 0.85;
     window.speechSynthesis.speak(utt);
-  }, [answered]);
+  }, [session]);
 
   const handleExport = useCallback(async () => {
     setExporting(true);
