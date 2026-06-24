@@ -12,7 +12,7 @@ export async function exportToPDF(session) {
     firstPage = false;
 
     const canvas = await renderPageToCanvas(page);
-    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
     const pdfW = pdf.internal.pageSize.getWidth();
     const pdfH = (canvas.height / canvas.width) * pdfW;
     pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH);

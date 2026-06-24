@@ -37,7 +37,17 @@ export function warpPerspective(imgEl, corners) {
   const natCorners = corners.map(({ x, y }) => ({ x: x * nW, y: y * nH }));
   const { width: outW, height: outH } = computeOutputSize(natCorners);
 
-  return renderWebGL(imgEl, H, outW, outH) ?? renderSoftware(imgEl, H, outW, outH);
+  const src = renderWebGL(imgEl, H, outW, outH) ?? renderSoftware(imgEl, H, outW, outH);
+
+  // 2D キャンバスに転写してからオートコントラストを適用
+  // (WebGL コンテキストと 2D コンテキストは同一 canvas で混在不可のため転写が必要)
+  const out = document.createElement('canvas');
+  out.width = outW;
+  out.height = outH;
+  const outCtx = out.getContext('2d');
+  outCtx.drawImage(src, 0, 0);
+  autoContrast(out, outCtx);
+  return out;
 }
 
 function computeHomography(srcPts, dstPts) {
@@ -83,7 +93,7 @@ function computeOutputSize(corners) {
   let height = Math.max(100, Math.round((leftH + rightH) / 2));
 
   // モバイルブラウザのキャンバスメモリ上限内に収める（特に iOS Safari）
-  const MAX_SIDE = 2400;
+  const MAX_SIDE = 3000;
   if (width > MAX_SIDE || height > MAX_SIDE) {
     const scale = MAX_SIDE / Math.max(width, height);
     width = Math.round(width * scale);
@@ -97,7 +107,10 @@ function renderWebGL(img, H, outW, outH) {
   const canvas = document.createElement('canvas');
   canvas.width = outW;
   canvas.height = outH;
-  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  // WebGL2 を優先取得（NPOT テクスチャでもミップマップが使えるため）
+  let gl = canvas.getContext('webgl2');
+  const hasWebGL2 = !!gl;
+  if (!gl) gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
   if (!gl) return null;
 
   const vs = mkShader(gl, gl.VERTEX_SHADER, VS);
@@ -136,10 +149,16 @@ function renderWebGL(img, H, outW, outH) {
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  // WebGL2 なら NPOT テクスチャでもミップマップ生成可（縮小時のエイリアシング抑制）
+  if (hasWebGL2) {
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  } else {
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  }
   gl.uniform1i(gl.getUniformLocation(prog, 'u_tex'), 0);
 
   gl.viewport(0, 0, outW, outH);
@@ -192,4 +211,47 @@ function renderSoftware(img, H, outW, outH) {
   }
   dctx.putImageData(dd, 0, 0);
   return dc;
+}
+
+// ---- 自動コントラスト補正（1%〜99% ヒストグラムストレッチ、per-channel）----
+// ワープ後の色かぶり・白飛び・暗沈みを補正してスキャナ風の清潔感を出す
+function autoContrast(canvas, ctx) {
+  const { width: w, height: h } = canvas;
+  const imageData = ctx.getImageData(0, 0, w, h);
+  const data = imageData.data;
+  const n = w * h;
+
+  // チャンネルごとにヒストグラムを構築
+  const hist = [new Int32Array(256), new Int32Array(256), new Int32Array(256)];
+  for (let i = 0; i < n; i++) {
+    hist[0][data[i * 4]]++;
+    hist[1][data[i * 4 + 1]]++;
+    hist[2][data[i * 4 + 2]]++;
+  }
+
+  // 1%・99% パーセンタイルを下限・上限としてルックアップテーブルを構築
+  const LO = 0.01 * n;
+  const HI = 0.99 * n;
+  const lut = [new Uint8Array(256), new Uint8Array(256), new Uint8Array(256)];
+  for (let c = 0; c < 3; c++) {
+    let cumul = 0, lo = 0, hi = 255;
+    for (let v = 0; v < 256; v++) {
+      cumul += hist[c][v];
+      if (cumul <= LO) lo = v;
+      if (cumul < HI) hi = v;
+    }
+    const range = hi - lo || 1;
+    for (let v = 0; v < 256; v++) {
+      lut[c][v] = Math.max(0, Math.min(255, Math.round((v - lo) * 255 / range)));
+    }
+  }
+
+  // ルックアップテーブルを適用
+  for (let i = 0; i < n; i++) {
+    data[i * 4]     = lut[0][data[i * 4]];
+    data[i * 4 + 1] = lut[1][data[i * 4 + 1]];
+    data[i * 4 + 2] = lut[2][data[i * 4 + 2]];
+  }
+
+  ctx.putImageData(imageData, 0, 0);
 }
