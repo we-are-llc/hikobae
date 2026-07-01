@@ -4,18 +4,28 @@
 export async function exportToPDF(session) {
   const { default: jsPDF } = await import('jspdf');
 
-  const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', compress: true });
-  let firstPage = true;
+  // 幅を210mm（A4幅）固定にし、高さは画像のアスペクト比に合わせて可変にする。
+  // jsPDF のデフォルト A4 固定ページ（297mm）に収まらない縦長画像が下で切れる問題を解消。
+  const PAGE_W = 210;
+  let pdf = null;
 
   for (const page of session.pages) {
-    if (!firstPage) pdf.addPage();
-    firstPage = false;
-
     const canvas = await renderPageToCanvas(page);
     const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const pdfW = pdf.internal.pageSize.getWidth();
-    const pdfH = (canvas.height / canvas.width) * pdfW;
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH);
+    const PAGE_H = (canvas.height / canvas.width) * PAGE_W;
+
+    if (!pdf) {
+      pdf = new jsPDF({
+        orientation: PAGE_H >= PAGE_W ? 'portrait' : 'landscape',
+        unit: 'mm',
+        format: [PAGE_W, PAGE_H],
+        compress: true,
+      });
+    } else {
+      pdf.addPage([PAGE_W, PAGE_H]);
+    }
+
+    pdf.addImage(imgData, 'JPEG', 0, 0, PAGE_W, PAGE_H);
   }
 
   const date = new Date().toISOString().slice(0, 10);
