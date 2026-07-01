@@ -28,12 +28,13 @@ export default function Confirm({ session, onNavigate }) {
     // 回答1件ずつ utterance を作りキューに積む（onstart でハイライト制御）
     const items = [];
     session.pages.forEach((page, pi) => {
-      const pageAnswered = page.boxes.filter((b) => b.text);
-      if (pageAnswered.length === 0) return;
+      if (!page.boxes.some((b) => b.text)) return;
       if (session.pages.length > 1) {
         items.push({ text: `ページ${pi + 1}`, boxId: null });
       }
-      pageAnswered.forEach((b, bi) => {
+      // 元のインデックス（画面表示の番号）を維持したまま未回答をスキップ
+      page.boxes.forEach((b, bi) => {
+        if (!b.text) return;
         items.push({ text: `${bi + 1}番。${b.text}`, boxId: b.id });
       });
     });
