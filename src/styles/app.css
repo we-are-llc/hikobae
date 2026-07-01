@@ -1246,7 +1246,9 @@ button:disabled {
 
 .confirm-body {
   flex: 1;
+  min-height: 0; /* flex子要素のmin-height:autoを上書きしてoverflow-y:autoを有効化 */
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 20px;
   display: flex;
   flex-direction: column;
