@@ -24,9 +24,6 @@ export function useSpeech() {
   const [interimTranscript, setInterimTranscript] = useState('');
   const [error, setError] = useState(null);
   const recognitionRef = useRef(null);
-  // これまでに確定済みとして取り込んだ result の数。
-  // 同一セッション内で results[] のインデックスと対応し、二重加算を防ぐ。
-  const committedCountRef = useRef(0);
 
   const stop = useCallback(() => {
     recognitionRef.current?.stop();
@@ -49,7 +46,6 @@ export function useSpeech() {
 
     setError(null);
     setInterimTranscript('');
-    committedCountRef.current = 0;
 
     const recognition = new SpeechRecognition();
     recognition.lang = 'ja-JP';
@@ -77,24 +73,31 @@ export function useSpeech() {
     };
 
     recognition.onresult = (e) => {
+      // 毎回すべての result から確定文を組み立て直す（再発火に強い）。
+      // ゆっくり話すとエンジンが早すぎる確定を出し、直後に前半を内包した
+      // より長い確定を別スロットで出し直すことがある（例: "4.2" → "4.2g"）。
+      // 隣接する確定セグメント間で内包関係を検出し、重複を排除する。
+      const finalSegs = [];
       let interim = '';
-      let finalAdded = '';
-      // resultIndex が過去のインデックスに戻って再発火することがあるため、
-      // 常に 0 から走査し「未確定インデックスの final のみ」を加算する。
       for (let i = 0; i < e.results.length; i++) {
-        const t = e.results[i][0].transcript;
-        if (e.results[i].isFinal) {
-          if (i >= committedCountRef.current) {
-            finalAdded += t;
-            committedCountRef.current = i + 1;
-          }
+        if (!e.results[i].isFinal) {
+          interim += e.results[i][0].transcript;
+          continue;
+        }
+        // 英数字トークンで前後に空白が付くことがあるため trim して比較・格納する。
+        const t = e.results[i][0].transcript.trim();
+        if (!t) continue;
+        const last = finalSegs.length ? finalSegs[finalSegs.length - 1] : null;
+        if (last !== null && t.startsWith(last)) {
+          // 直前セグメントを内包する再認識結果 → 置き換え
+          finalSegs[finalSegs.length - 1] = t;
+        } else if (last !== null && last.startsWith(t)) {
+          // 直前セグメントの一部を再送しただけ → 無視
         } else {
-          interim += t;
+          finalSegs.push(t);
         }
       }
-      if (finalAdded) {
-        setTranscript((prev) => prev + finalAdded);
-      }
+      setTranscript(finalSegs.join(''));
       setInterimTranscript(interim);
     };
 
