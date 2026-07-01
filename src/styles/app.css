@@ -1282,10 +1282,17 @@ button:disabled {
   gap: 12px;
   padding: 10px 16px;
   border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
 }
 
 .confirm-answer-item:last-child {
   border-bottom: none;
+}
+
+.confirm-answer-item--active {
+  background: var(--answer-bg);
+  border-left: 3px solid var(--answer);
+  padding-left: 13px;
 }
 
 .confirm-answer-num {

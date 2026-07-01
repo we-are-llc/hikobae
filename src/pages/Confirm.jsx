@@ -1,9 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { exportToPDF } from '../utils/pdfExport.js';
 
 export default function Confirm({ session, onNavigate }) {
   const [exporting, setExporting] = useState(false);
   const [exportDone, setExportDone] = useState(false);
+  const [activeBoxId, setActiveBoxId] = useState(null);
+  const bodyRef = useRef(null);
 
   const allBoxes = session.pages.flatMap((p, pi) =>
     p.boxes.map((b, bi) => ({ ...b, pageIndex: pi, boxIndex: bi }))
@@ -11,25 +13,43 @@ export default function Confirm({ session, onNavigate }) {
 
   const answered = allBoxes.filter((b) => b.text);
 
+  // アクティブ項目が変わったら自動スクロール
+  useEffect(() => {
+    if (!activeBoxId || !bodyRef.current) return;
+    const el = bodyRef.current.querySelector(`[data-box-id="${activeBoxId}"]`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [activeBoxId]);
+
   const handleReadAloud = useCallback(() => {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
+    setActiveBoxId(null);
 
-    // ページごとに番号をリセットし、複数ページの場合は「ページN」を前置
-    const segments = [];
+    // 回答1件ずつ utterance を作りキューに積む（onstart でハイライト制御）
+    const items = [];
     session.pages.forEach((page, pi) => {
       const pageAnswered = page.boxes.filter((b) => b.text);
       if (pageAnswered.length === 0) return;
-      if (session.pages.length > 1) segments.push(`ページ${pi + 1}`);
-      pageAnswered.forEach((b, bi) => segments.push(`${bi + 1}番。${b.text}`));
+      if (session.pages.length > 1) {
+        items.push({ text: `ページ${pi + 1}`, boxId: null });
+      }
+      pageAnswered.forEach((b, bi) => {
+        items.push({ text: `${bi + 1}番。${b.text}`, boxId: b.id });
+      });
     });
 
-    const text = segments.join('。');
-    if (!text) return;
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = 'ja-JP';
-    utt.rate = 0.85;
-    window.speechSynthesis.speak(utt);
+    if (items.length === 0) return;
+
+    items.forEach((item, idx) => {
+      const utt = new SpeechSynthesisUtterance(item.text);
+      utt.lang = 'ja-JP';
+      utt.rate = 0.85;
+      utt.onstart = () => setActiveBoxId(item.boxId);
+      if (idx === items.length - 1) {
+        utt.onend = () => setActiveBoxId(null);
+      }
+      window.speechSynthesis.speak(utt);
+    });
   }, [session]);
 
   const handleExport = useCallback(async () => {
@@ -54,7 +74,7 @@ export default function Confirm({ session, onNavigate }) {
         <h1>かくにん・しゅつりょく</h1>
       </div>
 
-      <div className="confirm-body">
+      <div className="confirm-body" ref={bodyRef}>
         {session.pages.map((page, pi) => {
           const pageBoxes = page.boxes;
           if (pageBoxes.length === 0) return null;
@@ -67,7 +87,11 @@ export default function Confirm({ session, onNavigate }) {
               )}
               <div className="confirm-answer-list">
                 {pageBoxes.map((box, bi) => (
-                  <div key={box.id} className="confirm-answer-item">
+                  <div
+                    key={box.id}
+                    data-box-id={box.id}
+                    className={`confirm-answer-item${activeBoxId === box.id ? ' confirm-answer-item--active' : ''}`}
+                  >
                     <div className="confirm-answer-num">{bi + 1}</div>
                     {box.text ? (
                       <div className="confirm-answer-text">{box.text}</div>
