@@ -24,6 +24,9 @@ export function useSpeech() {
   const [interimTranscript, setInterimTranscript] = useState('');
   const [error, setError] = useState(null);
   const recognitionRef = useRef(null);
+  // これまでに確定済みとして取り込んだ result の数。
+  // 同一セッション内で results[] のインデックスと対応し、二重加算を防ぐ。
+  const committedCountRef = useRef(0);
 
   const stop = useCallback(() => {
     recognitionRef.current?.stop();
@@ -46,6 +49,7 @@ export function useSpeech() {
 
     setError(null);
     setInterimTranscript('');
+    committedCountRef.current = 0;
 
     const recognition = new SpeechRecognition();
     recognition.lang = 'ja-JP';
@@ -75,10 +79,15 @@ export function useSpeech() {
     recognition.onresult = (e) => {
       let interim = '';
       let finalAdded = '';
-      for (let i = e.resultIndex; i < e.results.length; i++) {
+      // resultIndex が過去のインデックスに戻って再発火することがあるため、
+      // 常に 0 から走査し「未確定インデックスの final のみ」を加算する。
+      for (let i = 0; i < e.results.length; i++) {
         const t = e.results[i][0].transcript;
         if (e.results[i].isFinal) {
-          finalAdded += t;
+          if (i >= committedCountRef.current) {
+            finalAdded += t;
+            committedCountRef.current = i + 1;
+          }
         } else {
           interim += t;
         }
