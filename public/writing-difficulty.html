@@ -169,9 +169,18 @@ sup.cite a:hover { text-decoration: underline; }
     transition: 0.3s;
 }
 .cta a:hover { background: #3e8f59; }
-.cta-sub { margin-top: 14px; }
-.cta-sub a { color: #4ca96a; text-decoration: none; font-size: 0.95rem; }
-.cta-sub a:hover { text-decoration: underline; }
+.cta-sub { margin-top: 16px; }
+/* .cta a のピルスタイルを打ち消して通常のテキストリンクにする（詳細度を上げる） */
+.cta .cta-sub a {
+    display: inline;
+    background: none;
+    color: #4ca96a;
+    padding: 0;
+    border-radius: 0;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+.cta .cta-sub a:hover { text-decoration: underline; }
 .share-section { text-align: center; margin-top: 30px; }
 .share-label { font-size: 0.8rem; color: #999; letter-spacing: 0.08em; margin-bottom: 10px; }
 .share-buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
@@ -182,11 +191,12 @@ sup.cite a:hover { text-decoration: underline; }
     color: #fff; border: none; cursor: pointer; transition: opacity 0.2s; line-height: 1;
 }
 .share-btn:hover { opacity: 0.85; }
-.share-x    { background: #000; }
-.share-fb   { background: #1877F2; }
-.share-line { background: #06C755; }
-.share-hb   { background: #00A4DE; }
-.share-copy { background: #6B7280; font-family: inherit; }
+/* .cta a { background:#4ca96a } より詳細度を上げて各SNS色を確実に適用する */
+.share-buttons .share-btn.share-x    { background: #000; }
+.share-buttons .share-btn.share-fb   { background: #1877F2; }
+.share-buttons .share-btn.share-line { background: #06C755; }
+.share-buttons .share-btn.share-hb   { background: #00A4DE; }
+.share-buttons .share-btn.share-copy { background: #6B7280; font-family: inherit; }
 footer {
     text-align: center;
     padding: 34px 12px;
