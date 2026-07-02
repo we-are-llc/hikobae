@@ -88,7 +88,7 @@ export default function About({ onNavigate }) {
           <h2>更新履歴</h2>
           <div className="about-changelog">
             <div className="about-changelog-entry">
-              <div className="about-changelog-date">2026-07-01</div>
+              <div className="about-changelog-date">2026-07-02</div>
               <ul className="about-changelog-list">
                 <li>確認画面（かくにん・しゅつりょく）のスクロールが効かなかった不具合を修正</li>
                 <li>読み上げ中の回答欄をハイライト表示・自動スクロールする機能を追加</li>

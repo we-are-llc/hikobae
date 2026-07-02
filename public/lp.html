@@ -177,11 +177,12 @@ header p {
 
 .share-btn:hover { opacity: 0.85; }
 
-.share-x    { background: #000; }
-.share-fb   { background: #1877F2; }
-.share-line { background: #06C755; }
-.share-hb   { background: #00A4DE; }
-.share-copy { background: #6B7280; font-family: inherit; }
+/* .cta a { background:#4ca96a } より詳細度を上げて各SNS色を確実に適用する */
+.share-buttons .share-btn.share-x    { background: #000; }
+.share-buttons .share-btn.share-fb   { background: #1877F2; }
+.share-buttons .share-btn.share-line { background: #06C755; }
+.share-buttons .share-btn.share-hb   { background: #00A4DE; }
+.share-buttons .share-btn.share-copy { background: #6B7280; font-family: inherit; }
 
 .changelog {
     display: flex;
@@ -351,7 +352,7 @@ footer {
         <h2>更新履歴</h2>
         <div class="changelog">
             <div class="changelog-entry">
-                <div class="changelog-date">2026-07-01</div>
+                <div class="changelog-date">2026-07-02</div>
                 <ul class="changelog-list">
                     <li>確認画面（かくにん・しゅつりょく）のスクロールが効かなかった不具合を修正</li>
                     <li>読み上げ中の回答欄をハイライト表示・自動スクロールする機能を追加</li>
