@@ -39,11 +39,11 @@ export default function Crop({ name, rawPages, onNavigate }) {
 
   const toFrac = useCallback((clientX, clientY) => {
     const rect = containerRef.current.getBoundingClientRect();
-    // ハンドル（40px）の半径分を最小余白として確保し、スワイプ領域に被らないようにする
-    const minX = 20 / rect.width;
-    const maxX = 1 - 20 / rect.width;
+    // 手動ドラッグ時は左端〜右端まで全域を許可する。
+    // （初期値は initCorners でスワイプ領域を避けており、ドラッグ中は
+    //  setPointerCapture でポインタがハンドルに固定されるため端まで動かしても安全）
     return {
-      x: Math.max(minX, Math.min(maxX, (clientX - rect.left) / rect.width)),
+      x: Math.max(0, Math.min(1, (clientX - rect.left) / rect.width)),
       y: Math.max(0, Math.min(1, (clientY - rect.top) / rect.height)),
     };
   }, []);

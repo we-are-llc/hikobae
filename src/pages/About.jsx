@@ -94,6 +94,7 @@ export default function About({ onNavigate }) {
                 <li>読み上げ中の回答欄をハイライト表示・自動スクロールする機能を追加</li>
                 <li>未回答欄がある場合に読み上げ番号が画面表示とズレていた不具合を修正</li>
                 <li>音声入力でゆっくり話すと文字が重複入力される不具合を修正</li>
+                <li>よみとり範囲の切り取りハンドルを手動で左端・右端まで動かせるように改善</li>
               </ul>
             </div>
             <div className="about-changelog-entry">
