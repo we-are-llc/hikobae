@@ -1519,6 +1519,87 @@ button:disabled {
   font-size: 18px;
 }
 
+/* ===== しあげ調整（Crop adjust phase） ===== */
+.adjust-scroll {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.adjust-preview {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.adjust-controls {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 10px 12px 4px;
+}
+
+.preset-row {
+  display: flex;
+  gap: 6px;
+}
+
+.preset-btn {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  padding: 8px 4px;
+  min-height: 44px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.preset-btn.active {
+  background: var(--answer-bg);
+  border-color: var(--answer);
+  color: var(--answer);
+  font-weight: 700;
+}
+
+.fine-toggle {
+  width: 100%;
+  margin-top: 8px;
+  font-size: 13px;
+  background: transparent;
+  color: var(--text-muted);
+  min-height: 36px;
+}
+
+.fine-controls {
+  padding: 4px 2px 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fine-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.fine-row span {
+  flex-shrink: 0;
+  width: 88px;
+}
+
+.fine-row input[type='range'] {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--answer);
+}
+
 /* ===== Zoom controls (共通・かいとう / きりとり) ===== */
 .zoom-controls {
   position: absolute;

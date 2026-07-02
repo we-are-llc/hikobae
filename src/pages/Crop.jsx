@@ -2,10 +2,18 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { warpPerspective } from '../utils/perspective.js';
 import { saveSession } from '../utils/db.js';
 import { detectDocumentCorners } from '../utils/detectEdges.js';
+import {
+  applyAdjustments,
+  downscale,
+  PRESETS,
+  PRESET_ORDER,
+  PREVIEW_MAX_SIDE,
+} from '../utils/imageAdjust.js';
 
 const COLORS = { tl: '#3B82F6', tr: '#10B981', br: '#F59E0B', bl: '#EF4444' };
 const LABELS = { tl: '左上', tr: '右上', br: '右下', bl: '左下' };
 const ZOOM_LEVELS = [1, 1.5, 2, 3];
+const DEFAULT_PRESET = 'text';
 
 function initCorners() {
   return [
@@ -28,8 +36,16 @@ export default function Crop({ name, rawPages, onNavigate }) {
   const [processing, setProcessing] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [rotatedImages, setRotatedImages] = useState({});
+  // 'crop'（範囲選択）| 'adjust'（しあげ調整）
+  const [phase, setPhase] = useState('crop');
+  const [preset, setPreset] = useState(DEFAULT_PRESET);
+  const [adjust, setAdjust] = useState({ brightness: 0, contrast: 0, sharpen: 0 });
+  const [showFine, setShowFine] = useState(false);
   const imgRef = useRef(null);
   const containerRef = useRef(null);
+  const warpedRef = useRef(null);       // 原寸のワープ結果（調整のたびに再ワープしない）
+  const previewBaseRef = useRef(null);  // プレビュー用に縮小したワープ結果
+  const previewCanvasRef = useRef(null);
 
   const total = rawPages.length;
   const currentImage = rotatedImages[pageIdx] ?? rawPages[pageIdx]?.imageData;
@@ -38,6 +54,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
     setCorners(initCorners());
     setImgLoaded(false);
     setZoom(1);
+    setPhase('crop');
   }, [pageIdx]);
 
   const zoomIn = useCallback(() => {
@@ -91,25 +108,13 @@ export default function Crop({ name, rawPages, onNavigate }) {
     setZoom(1);
   }, [imgLoaded, pageIdx]);
 
-  const processPage = useCallback(async (skip) => {
-    setProcessing(true);
-    let imageData = currentImage;
-
-    if (!skip && imgRef.current && imgLoaded) {
-      try {
-        const canvas = warpPerspective(imgRef.current, corners);
-        // PNG（ロスレス）で保存して JPEG 二重圧縮によるテキストのぼやけを防ぐ
-        imageData = canvas.toDataURL('image/png');
-      } catch (err) {
-        console.error('warp failed, using original:', err);
-      }
-    }
-
+  // 結果を確定して次ページ or 回答画面へ
+  const commitPage = useCallback(async (imageData) => {
     const newResults = [...results, { imageData, boxes: [] }];
-
     if (pageIdx + 1 < total) {
       setResults(newResults);
       setPageIdx((i) => i + 1);
+      setPhase('crop');
       setProcessing(false);
     } else {
       const session = {
@@ -122,7 +127,83 @@ export default function Crop({ name, rawPages, onNavigate }) {
       await saveSession(session).catch(console.error);
       onNavigate('answer', session);
     }
-  }, [currentImage, corners, results, pageIdx, total, name, imgLoaded, onNavigate]);
+  }, [results, pageIdx, total, name, onNavigate]);
+
+  // 「そのまま」：ワープも調整もせず原画像を確定
+  const skipPage = useCallback(() => {
+    setProcessing(true);
+    commitPage(currentImage);
+  }, [commitPage, currentImage]);
+
+  // 「きりとる」：ワープしてしあげ調整工程へ
+  const startAdjust = useCallback(() => {
+    if (!imgRef.current || !imgLoaded) return;
+    setProcessing(true);
+    try {
+      const warped = warpPerspective(imgRef.current, corners, { autoContrast: false });
+      warpedRef.current = warped;
+      previewBaseRef.current = downscale(warped, PREVIEW_MAX_SIDE);
+      const def = PRESETS[DEFAULT_PRESET];
+      setPreset(DEFAULT_PRESET);
+      setAdjust({ brightness: def.brightness, contrast: def.contrast, sharpen: def.sharpen });
+      setShowFine(false);
+      setPhase('adjust');
+      setProcessing(false);
+    } catch (err) {
+      console.error('warp failed, using original:', err);
+      commitPage(currentImage);
+    }
+  }, [corners, imgLoaded, currentImage, commitPage]);
+
+  const currentOpts = useCallback(() => {
+    const def = PRESETS[preset];
+    return {
+      whiten: def.whiten,
+      grayscale: def.grayscale,
+      auto: def.auto,
+      brightness: adjust.brightness,
+      contrast: adjust.contrast,
+      sharpen: adjust.sharpen,
+    };
+  }, [preset, adjust]);
+
+  // しあげプレビューを再描画（縮小版に対して調整を適用）
+  useEffect(() => {
+    if (phase !== 'adjust') return;
+    const base = previewBaseRef.current;
+    const pc = previewCanvasRef.current;
+    if (!base || !pc) return;
+    let cancelled = false;
+    // 連続ドラッグ中の負荷を抑えるため次フレームで計算
+    const raf = requestAnimationFrame(() => {
+      if (cancelled) return;
+      const result = applyAdjustments(base, currentOpts());
+      pc.width = result.width;
+      pc.height = result.height;
+      pc.getContext('2d').drawImage(result, 0, 0);
+    });
+    return () => { cancelled = true; cancelAnimationFrame(raf); };
+  }, [phase, currentOpts]);
+
+  const selectPreset = useCallback((id) => {
+    const def = PRESETS[id];
+    setPreset(id);
+    setAdjust({ brightness: def.brightness, contrast: def.contrast, sharpen: def.sharpen });
+  }, []);
+
+  // 「けってい」：原寸に調整を適用して確定
+  const confirmAdjust = useCallback(async () => {
+    setProcessing(true);
+    let imageData;
+    try {
+      const full = applyAdjustments(warpedRef.current, currentOpts());
+      imageData = full.toDataURL('image/png');
+    } catch (err) {
+      console.error('adjust failed, using warped:', err);
+      imageData = warpedRef.current.toDataURL('image/png');
+    }
+    await commitPage(imageData);
+  }, [currentOpts, commitPage]);
 
   // Build SVG paths
   const c = corners;
@@ -130,6 +211,99 @@ export default function Crop({ name, rawPages, onNavigate }) {
   const polyPath = `M${pts[0]} L${pts[1]} L${pts[2]} L${pts[3]} Z`;
   const dimPath = `M0,0 L100,0 L100,100 L0,100 Z ${polyPath}`;
 
+  const isAuto = PRESETS[preset].auto;
+
+  // ===== しあげ調整フェーズ =====
+  if (phase === 'adjust') {
+    return (
+      <div className="crop-page">
+        <div className="crop-header">
+          <button className="btn-ghost" onClick={() => setPhase('crop')} disabled={processing}>
+            ← もどる
+          </button>
+          <div className="crop-header-title">
+            しあげ調整
+            {total > 1 && (
+              <span className="crop-page-badge">{pageIdx + 1} / {total}</span>
+            )}
+          </div>
+        </div>
+
+        <div className="crop-scroll adjust-scroll">
+          <canvas ref={previewCanvasRef} className="adjust-preview" />
+        </div>
+
+        <div className="adjust-controls">
+          <div className="preset-row">
+            {PRESET_ORDER.map((id) => (
+              <button
+                key={id}
+                className={`preset-btn${preset === id ? ' active' : ''}`}
+                onClick={() => selectPreset(id)}
+                disabled={processing}
+              >
+                {PRESETS[id].label}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="fine-toggle"
+            onClick={() => setShowFine((v) => !v)}
+            disabled={isAuto}
+          >
+            {isAuto ? 'オートは自動調整です' : (showFine ? '▲ びさいちょうせいを とじる' : '▼ びさいちょうせい')}
+          </button>
+
+          {showFine && !isAuto && (
+            <div className="fine-controls">
+              <label className="fine-row">
+                <span>あかるさ</span>
+                <input
+                  type="range" min="-100" max="100" value={adjust.brightness}
+                  onChange={(e) => setAdjust((a) => ({ ...a, brightness: Number(e.target.value) }))}
+                />
+              </label>
+              <label className="fine-row">
+                <span>コントラスト</span>
+                <input
+                  type="range" min="-100" max="100" value={adjust.contrast}
+                  onChange={(e) => setAdjust((a) => ({ ...a, contrast: Number(e.target.value) }))}
+                />
+              </label>
+              <label className="fine-row">
+                <span>くっきり</span>
+                <input
+                  type="range" min="0" max="100" value={adjust.sharpen}
+                  onChange={(e) => setAdjust((a) => ({ ...a, sharpen: Number(e.target.value) }))}
+                />
+              </label>
+            </div>
+          )}
+        </div>
+
+        <div className="crop-footer">
+          <button className="btn-secondary" onClick={() => setPhase('crop')} disabled={processing}>
+            ← もどる
+          </button>
+          <button className="btn-green" onClick={confirmAdjust} disabled={processing}>
+            {processing ? (
+              <>
+                <span className="spinner" style={{ width: 18, height: 18, borderWidth: 2 }} />
+                しょり中…
+              </>
+            ) : pageIdx + 1 < total ? (
+              'けってい →'
+            ) : (
+              'はじめる →'
+            )}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ===== きりとり（範囲選択）フェーズ =====
   return (
     <div className="crop-page">
       <div className="crop-header">
@@ -213,7 +387,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
       <div className="crop-footer">
         <button
           className="btn-secondary"
-          onClick={() => processPage(true)}
+          onClick={skipPage}
           disabled={processing}
         >
           そのまま
@@ -228,7 +402,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
         </button>
         <button
           className="btn-green"
-          onClick={() => processPage(false)}
+          onClick={startAdjust}
           disabled={processing || !imgLoaded}
         >
           {processing ? (
@@ -236,10 +410,8 @@ export default function Crop({ name, rawPages, onNavigate }) {
               <span className="spinner" style={{ width: 18, height: 18, borderWidth: 2 }} />
               へんかんちゅう…
             </>
-          ) : pageIdx + 1 < total ? (
-            'きりとる →'
           ) : (
-            'はじめる →'
+            'きりとる →'
           )}
         </button>
       </div>

@@ -23,8 +23,11 @@ const FS = `
 `;
 
 // corners: [{x,y}] TL/TR/BR/BL as fractions [0,1] of image natural dimensions
+// opts.autoContrast: ワープ後に自動コントラストを適用するか（既定 true）。
+//   調整工程で仕上げを選ぶ場合は false にして生のワープ結果を得る。
 // Returns canvas element with warped image
-export function warpPerspective(imgEl, corners) {
+export function warpPerspective(imgEl, corners, opts = {}) {
+  const { autoContrast: applyAuto = true } = opts;
   const nW = imgEl.naturalWidth;
   const nH = imgEl.naturalHeight;
   if (!nW || !nH) throw new Error('Image not loaded');
@@ -46,7 +49,7 @@ export function warpPerspective(imgEl, corners) {
   out.height = outH;
   const outCtx = out.getContext('2d');
   outCtx.drawImage(src, 0, 0);
-  autoContrast(out, outCtx);
+  if (applyAuto) autoContrast(out, outCtx);
   return out;
 }
 
@@ -215,7 +218,7 @@ function renderSoftware(img, H, outW, outH) {
 
 // ---- 自動コントラスト補正（1%〜99% ヒストグラムストレッチ、per-channel）----
 // ワープ後の色かぶり・白飛び・暗沈みを補正してスキャナ風の清潔感を出す
-function autoContrast(canvas, ctx) {
+export function autoContrast(canvas, ctx) {
   const { width: w, height: h } = canvas;
   const imageData = ctx.getImageData(0, 0, w, h);
   const data = imageData.data;
