@@ -10,10 +10,12 @@ function generateId() {
 
 const DEFAULT_BOX_W = 0.24;
 const DEFAULT_BOX_H = 0.065;
+const ZOOM_LEVELS = [1, 1.5, 2, 3];
 
 export default function Answer({ session, onNavigate, onUpdate }) {
   const [mode, setMode] = useState('place');
   const [pageIndex, setPageIndex] = useState(0);
+  const [zoom, setZoom] = useState(1);
   const [selectedBoxId, setSelectedBoxId] = useState(null);
   const [voiceBoxId, setVoiceBoxId] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -69,10 +71,18 @@ export default function Answer({ session, onNavigate, onUpdate }) {
 
   useEffect(() => {
     setHistory([]);
+    setZoom(1);
     clearTimeout(historyTimerRef.current);
     historyTimerRef.current = null;
     pendingHistoryRef.current = null;
   }, [pageIndex]);
+
+  const zoomIn = useCallback(() => {
+    setZoom((z) => ZOOM_LEVELS[Math.min(ZOOM_LEVELS.indexOf(z) + 1, ZOOM_LEVELS.length - 1)]);
+  }, []);
+  const zoomOut = useCallback(() => {
+    setZoom((z) => ZOOM_LEVELS[Math.max(ZOOM_LEVELS.indexOf(z) - 1, 0)]);
+  }, []);
 
   const handleUndo = useCallback(() => {
     setHistory((prev) => {
@@ -227,7 +237,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
 
       {/* Scrollable image area */}
       <div className="answer-scroll">
-        <div className="answer-image-container">
+        <div className="answer-image-container" style={{ width: `${zoom * 100}%` }}>
           <img
             src={currentPage?.imageData}
             alt={`ページ ${pageIndex + 1}`}
@@ -258,6 +268,17 @@ export default function Answer({ session, onNavigate, onUpdate }) {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Zoom controls */}
+      <div className="zoom-controls">
+        <button onClick={zoomIn} disabled={zoom >= ZOOM_LEVELS[ZOOM_LEVELS.length - 1]} aria-label="拡大">
+          ＋
+        </button>
+        <span className="zoom-controls-label">{Math.round(zoom * 100)}%</span>
+        <button onClick={zoomOut} disabled={zoom <= ZOOM_LEVELS[0]} aria-label="縮小">
+          －
+        </button>
       </div>
 
       {/* Footer */}

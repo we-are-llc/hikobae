@@ -574,6 +574,7 @@ button:disabled {
   flex-direction: column;
   height: 100dvh;
   overflow: hidden;
+  position: relative;
 }
 
 .answer-header {
@@ -607,8 +608,7 @@ button:disabled {
 
 .answer-scroll {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
   background: #e8e6e0;
 }
@@ -1408,6 +1408,7 @@ button:disabled {
   flex-direction: column;
   height: 100dvh;
   overflow: hidden;
+  position: relative;
 }
 
 .crop-header {
@@ -1441,8 +1442,7 @@ button:disabled {
 
 .crop-scroll {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
   background: #1c1c1c;
   /* スマホのスワイプ領域（戻るジェスチャー等）とハンドルが被らないよう余白を確保 */
@@ -1517,4 +1517,48 @@ button:disabled {
 
 .crop-rotate-btn {
   font-size: 18px;
+}
+
+/* ===== Zoom controls (共通・かいとう / きりとり) ===== */
+.zoom-controls {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(30, 30, 30, 0.72);
+  border-radius: 22px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  z-index: 20;
+  backdrop-filter: blur(4px);
+}
+
+.zoom-controls button {
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.zoom-controls button:disabled {
+  opacity: 0.35;
+}
+
+.zoom-controls-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  padding: 2px 0;
+  min-width: 32px;
+  text-align: center;
 }

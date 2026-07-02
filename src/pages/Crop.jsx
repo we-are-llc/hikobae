@@ -5,6 +5,7 @@ import { detectDocumentCorners } from '../utils/detectEdges.js';
 
 const COLORS = { tl: '#3B82F6', tr: '#10B981', br: '#F59E0B', bl: '#EF4444' };
 const LABELS = { tl: '左上', tr: '右上', br: '右下', bl: '左下' };
+const ZOOM_LEVELS = [1, 1.5, 2, 3];
 
 function initCorners() {
   return [
@@ -22,6 +23,7 @@ function genId() {
 export default function Crop({ name, rawPages, onNavigate }) {
   const [pageIdx, setPageIdx] = useState(0);
   const [corners, setCorners] = useState(initCorners);
+  const [zoom, setZoom] = useState(1);
   const [results, setResults] = useState([]);
   const [processing, setProcessing] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -35,7 +37,15 @@ export default function Crop({ name, rawPages, onNavigate }) {
   useEffect(() => {
     setCorners(initCorners());
     setImgLoaded(false);
+    setZoom(1);
   }, [pageIdx]);
+
+  const zoomIn = useCallback(() => {
+    setZoom((z) => ZOOM_LEVELS[Math.min(ZOOM_LEVELS.indexOf(z) + 1, ZOOM_LEVELS.length - 1)]);
+  }, []);
+  const zoomOut = useCallback(() => {
+    setZoom((z) => ZOOM_LEVELS[Math.max(ZOOM_LEVELS.indexOf(z) - 1, 0)]);
+  }, []);
 
   const toFrac = useCallback((clientX, clientY) => {
     const rect = containerRef.current.getBoundingClientRect();
@@ -78,6 +88,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
     setRotatedImages((prev) => ({ ...prev, [pageIdx]: canvas.toDataURL('image/png') }));
     setCorners(initCorners());
     setImgLoaded(false);
+    setZoom(1);
   }, [imgLoaded, pageIdx]);
 
   const processPage = useCallback(async (skip) => {
@@ -136,7 +147,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
       </div>
 
       <div className="crop-scroll">
-        <div ref={containerRef} className="crop-container">
+        <div ref={containerRef} className="crop-container" style={{ width: `${zoom * 100}%` }}>
           <img
             ref={imgRef}
             src={currentImage}
@@ -186,6 +197,18 @@ export default function Crop({ name, rawPages, onNavigate }) {
           )}
         </div>
       </div>
+
+      {imgLoaded && (
+        <div className="zoom-controls">
+          <button onClick={zoomIn} disabled={zoom >= ZOOM_LEVELS[ZOOM_LEVELS.length - 1]} aria-label="拡大">
+            ＋
+          </button>
+          <span className="zoom-controls-label">{Math.round(zoom * 100)}%</span>
+          <button onClick={zoomOut} disabled={zoom <= ZOOM_LEVELS[0]} aria-label="縮小">
+            －
+          </button>
+        </div>
+      )}
 
       <div className="crop-footer">
         <button
