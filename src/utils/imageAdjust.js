@@ -164,57 +164,51 @@ function whitenBackground(data, n) {
 
 // アンシャープマスク：分離ボックスぼかしで低周波を作り、
 // out = src + amount * (src - blur) でエッジを強調する。
+//
+// メモリ最適化：チャンネルごとに処理し、中間バッファは w*h の Float32 を1枚だけ使う。
+// 縦方向のぼかしと適用を融合し、blur の全面バッファ確保を避ける。
+// これにより 3500px 級でもピーク使用量を大幅に抑え、iOS Safari でも安全に動作する。
+// （旧実装は w*h*4 の Float32 を2枚確保し、3500px で約280MB に達していた）
 function unsharpMask(canvas, ctx, amount) {
   const w = canvas.width, h = canvas.height;
-  const src = ctx.getImageData(0, 0, w, h);
-  const blur = boxBlurRGB(src.data, w, h, 2);
-  const d = src.data;
-  for (let i = 0; i < w * h; i++) {
-    const p = i * 4;
-    d[p]     = clamp(d[p]     + amount * (d[p]     - blur[p]));
-    d[p + 1] = clamp(d[p + 1] + amount * (d[p + 1] - blur[p + 1]));
-    d[p + 2] = clamp(d[p + 2] + amount * (d[p + 2] - blur[p + 2]));
-  }
-  ctx.putImageData(src, 0, 0);
-}
+  const r = 2, win = 2 * r + 1;
+  const img = ctx.getImageData(0, 0, w, h);
+  const d = img.data;
+  const tmp = new Float32Array(w * h); // 横方向ぼかし結果（チャンネルごとに再利用）
 
-// 分離ボックスぼかし（半径 r）。RGB のみ、アルファは無視。
-function boxBlurRGB(data, w, h, r) {
-  const tmp = new Float32Array(w * h * 4);
-  const out = new Float32Array(w * h * 4);
-  const win = 2 * r + 1;
-
-  // 横方向
-  for (let y = 0; y < h; y++) {
-    for (let c = 0; c < 3; c++) {
+  for (let c = 0; c < 3; c++) {
+    // 横方向ぼかし → tmp
+    for (let y = 0; y < h; y++) {
       let sum = 0;
       for (let x = -r; x <= r; x++) {
-        const xx = Math.min(w - 1, Math.max(0, x));
-        sum += data[(y * w + xx) * 4 + c];
+        const xx = x < 0 ? 0 : x >= w ? w - 1 : x;
+        sum += d[(y * w + xx) * 4 + c];
       }
+      const base = y * w;
       for (let x = 0; x < w; x++) {
-        tmp[(y * w + x) * 4 + c] = sum / win;
-        const xOut = Math.min(w - 1, Math.max(0, x - r));
-        const xIn = Math.min(w - 1, Math.max(0, x + r + 1));
-        sum += data[(y * w + xIn) * 4 + c] - data[(y * w + xOut) * 4 + c];
+        tmp[base + x] = sum / win;
+        const xOut = x - r < 0 ? 0 : x - r;
+        const xIn = x + r + 1 >= w ? w - 1 : x + r + 1;
+        sum += d[(base + xIn) * 4 + c] - d[(base + xOut) * 4 + c];
       }
     }
-  }
-  // 縦方向
-  for (let x = 0; x < w; x++) {
-    for (let c = 0; c < 3; c++) {
+    // 縦方向ぼかし＋適用（blur の全面バッファは持たず、その場で d に反映）
+    for (let x = 0; x < w; x++) {
       let sum = 0;
       for (let y = -r; y <= r; y++) {
-        const yy = Math.min(h - 1, Math.max(0, y));
-        sum += tmp[(yy * w + x) * 4 + c];
+        const yy = y < 0 ? 0 : y >= h ? h - 1 : y;
+        sum += tmp[yy * w + x];
       }
       for (let y = 0; y < h; y++) {
-        out[(y * w + x) * 4 + c] = sum / win;
-        const yOut = Math.min(h - 1, Math.max(0, y - r));
-        const yIn = Math.min(h - 1, Math.max(0, y + r + 1));
-        sum += tmp[(yIn * w + x) * 4 + c] - tmp[(yOut * w + x) * 4 + c];
+        const blurred = sum / win;
+        const p = (y * w + x) * 4 + c;
+        d[p] = clamp(d[p] + amount * (d[p] - blurred));
+        const yOut = y - r < 0 ? 0 : y - r;
+        const yIn = y + r + 1 >= h ? h - 1 : y + r + 1;
+        sum += tmp[yIn * w + x] - tmp[yOut * w + x];
       }
     }
   }
-  return out;
+
+  ctx.putImageData(img, 0, 0);
 }

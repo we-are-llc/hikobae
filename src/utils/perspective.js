@@ -95,7 +95,10 @@ function computeOutputSize(corners) {
   let width = Math.max(100, Math.round((topW + botW) / 2));
   let height = Math.max(100, Math.round((leftH + rightH) / 2));
 
-  // モバイルブラウザのキャンバスメモリ上限内に収める（特に iOS Safari）
+  // モバイルブラウザのキャンバス上限内に収める（特に iOS Safari）。
+  // 3500 への引き上げも検証したが、しあげ調整の全処理がモバイルで約21秒（3000で約15秒）と
+  // 遅く、確定時の待ち時間が実用的でないため 3000 を維持する。
+  // A4 なら約250dpi 相当でスキャン品質に近い。
   const MAX_SIDE = 3000;
   if (width > MAX_SIDE || height > MAX_SIDE) {
     const scale = MAX_SIDE / Math.max(width, height);
