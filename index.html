@@ -28,9 +28,48 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="ひこばえ - 書くことが苦手な子どものための学習支援WEBアプリ">
     <meta name="twitter:description" content="書字が苦手なお子さんが問題用紙を音声で答えられる無料WEBアプリ。完全オフライン動作・プライバシー安全。">
+
+    <!-- Structured Data: 無料WebアプリであることをGoogleに明示 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "ひこばえ",
+      "url": "https://hikobae.we-re.net/",
+      "description": "書字が苦手なお子さんが、問題用紙を音声で答えられる無料WEBアプリ。スマホで撮影→音声入力→PDF保存まで完全オフラインで動作します。",
+      "applicationCategory": "EducationApplication",
+      "operatingSystem": "Web",
+      "browserRequirements": "Requires JavaScript. Chrome または Edge 推奨。",
+      "inLanguage": "ja",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "JPY"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "ウィアー合同会社",
+        "url": "https://we-re.net/"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <!-- クローラー・JS無効環境向けのフォールバック本文 -->
+    <noscript>
+      <div style="max-width:640px;margin:40px auto;padding:0 20px;font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;line-height:1.8;color:#1a1a1a;">
+        <h1>ひこばえ — 書くことが苦手な子どものための学習支援WEBアプリ</h1>
+        <p>「ひこばえ」は、書字が苦手なお子さんが、問題用紙をスマホで撮影し、音声で答えを入力して、PDFで保存できる無料のWEBアプリです。完全オフラインで動作し、撮影した画像やこたえは端末の外に送信されないため、プライバシーも安全です。</p>
+        <p>このアプリはJavaScriptを有効にするとご利用いただけます。Chrome または Edge のご利用を推奨します。</p>
+        <ul>
+          <li><a href="https://hikobae.we-re.net/lp.html">ひこばえの紹介ページ</a></li>
+          <li><a href="https://hikobae.we-re.net/manual.html">つかいかた（マニュアル）</a></li>
+        </ul>
+        <p>提供：ウィアー合同会社</p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
