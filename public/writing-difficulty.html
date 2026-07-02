@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>書字困難（ディスグラフィア）とは — 原因・支援の考え方と「音声で答える」という選択肢｜ひこばえ</title>
+
+<!-- SEO -->
+<meta name="description" content="書字困難（ディスグラフィア）とは何か。定義・割合・「書く」ことが負担になる仕組みを、DSM-5や文部科学省の調査、研究をもとに解説。合理的配慮やICT・音声入力という支援の選択肢、無料アプリ『ひこばえ』の開発背景も紹介します。">
+<meta name="keywords" content="書字困難,ディスグラフィア,ディスレクシア,限局性学習症,SLD,発達障害,学習障害,合理的配慮,音声入力,学習支援,ASD,ひこばえ">
+<meta name="author" content="ウィアー合同会社">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://hikobae.we-re.net/writing-difficulty.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://hikobae.we-re.net/writing-difficulty.html">
+<meta property="og:title" content="書字困難（ディスグラフィア）とは — 原因・支援の考え方と「音声で答える」という選択肢">
+<meta property="og:description" content="「書く」ことが負担になる仕組みを、公的調査や研究をもとに解説。合理的配慮やICT・音声入力という支援の選択肢を紹介します。">
+<meta property="og:site_name" content="ひこばえ">
+<meta property="og:locale" content="ja_JP">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="書字困難（ディスグラフィア）とは — 原因・支援の考え方と「音声で答える」という選択肢">
+<meta name="twitter:description" content="「書く」ことが負担になる仕組みを、公的調査や研究をもとに解説。合理的配慮やICT・音声入力という支援の選択肢を紹介します。">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "書字困難（ディスグラフィア）とは — 原因・支援の考え方と「音声で答える」という選択肢",
+  "description": "書字困難（ディスグラフィア）の定義・割合・仕組みを公的調査や研究をもとに解説し、合理的配慮やICT・音声入力という支援の選択肢を紹介する記事です。",
+  "inLanguage": "ja",
+  "datePublished": "2026-07-02",
+  "dateModified": "2026-07-02",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://hikobae.we-re.net/writing-difficulty.html"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "ウィアー合同会社",
+    "url": "https://we-re.net/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ウィアー合同会社",
+    "url": "https://we-re.net/"
+  }
+}
+</script>
+<style>
+body {
+    margin: 0;
+    font-family: "Noto Sans JP", sans-serif;
+    line-height: 1.9;
+    color: #333;
+    background: #f9fafb;
+}
+header {
+    background: linear-gradient(135deg, #6bbf7a, #4ca96a);
+    color: white;
+    padding: 54px 20px;
+    text-align: center;
+}
+header h1 {
+    margin: 0 auto;
+    max-width: 820px;
+    font-size: 1.9rem;
+    line-height: 1.5;
+}
+header p {
+    margin-top: 14px;
+    font-size: 0.95rem;
+    opacity: 0.95;
+}
+.container {
+    max-width: 760px;
+    margin: auto;
+    padding: 40px 20px 10px;
+}
+.breadcrumb {
+    font-size: 0.82rem;
+    color: #888;
+    margin-bottom: 24px;
+}
+.breadcrumb a { color: #4ca96a; text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.lead {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 22px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    font-size: 1.02rem;
+    margin-bottom: 40px;
+}
+.toc {
+    background: #f1f6f2;
+    border: 1px solid #dce8de;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 44px;
+    font-size: 0.92rem;
+}
+.toc strong { display:block; margin-bottom: 8px; color:#3e8f59; }
+.toc ol { margin: 0; padding-left: 20px; }
+.toc a { color: #444; text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+h2.sec {
+    border-left: 6px solid #6bbf7a;
+    padding-left: 12px;
+    margin: 48px 0 18px;
+    font-size: 1.35rem;
+    line-height: 1.5;
+}
+h3.sub {
+    font-size: 1.08rem;
+    margin: 30px 0 10px;
+    color: #2f6b45;
+}
+p { margin: 0 0 16px; }
+.prose ul { margin: 0 0 16px; padding-left: 22px; }
+.prose li { margin-bottom: 6px; }
+.note {
+    background: #f1f6f2;
+    border-left: 4px solid #6bbf7a;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 22px 0;
+    font-size: 0.96rem;
+}
+.founder {
+    background: #fffdf7;
+    border: 1px solid #f0e6cf;
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin: 24px 0;
+}
+.founder h3 { margin-top: 0; }
+sup.cite { font-size: 0.72em; }
+sup.cite a { color: #4ca96a; text-decoration: none; font-weight: 700; }
+sup.cite a:hover { text-decoration: underline; }
+.refs { font-size: 0.86rem; color: #555; }
+.refs ol { padding-left: 22px; }
+.refs li { margin-bottom: 10px; line-height: 1.7; }
+.refs a { color: #4ca96a; word-break: break-all; }
+.disclaimer {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-size: 0.84rem;
+    color: #666;
+    margin: 30px 0;
+}
+.cta {
+    text-align: center;
+    margin: 50px 0 10px;
+}
+.cta a {
+    display: inline-block;
+    background: #4ca96a;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 1.05rem;
+    transition: 0.3s;
+}
+.cta a:hover { background: #3e8f59; }
+.cta-sub { margin-top: 14px; }
+.cta-sub a { color: #4ca96a; text-decoration: none; font-size: 0.95rem; }
+.cta-sub a:hover { text-decoration: underline; }
+.share-section { text-align: center; margin-top: 30px; }
+.share-label { font-size: 0.8rem; color: #999; letter-spacing: 0.08em; margin-bottom: 10px; }
+.share-buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+.share-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 20px;
+    font-size: 0.85rem; font-weight: 600; text-decoration: none;
+    color: #fff; border: none; cursor: pointer; transition: opacity 0.2s; line-height: 1;
+}
+.share-btn:hover { opacity: 0.85; }
+.share-x    { background: #000; }
+.share-fb   { background: #1877F2; }
+.share-line { background: #06C755; }
+.share-hb   { background: #00A4DE; }
+.share-copy { background: #6B7280; font-family: inherit; }
+footer {
+    text-align: center;
+    padding: 34px 12px;
+    font-size: 0.88rem;
+    color: #666;
+    line-height: 1.8;
+}
+footer a { color: #4ca96a; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>書字困難（ディスグラフィア）とは<br>― 原因・支援の考え方と「音声で答える」という選択肢</h1>
+    <p>公的調査・研究にもとづく解説｜ひこばえ（ウィアー合同会社）</p>
+</header>
+
+<div class="container">
+
+    <nav class="breadcrumb">
+        <a href="https://hikobae.we-re.net/">ひこばえ</a> ／ 書字困難（ディスグラフィア）とは
+    </nav>
+
+    <div class="lead">
+        <p style="margin-bottom:0;">
+            「頭では分かっているのに、書くのがつらくて答えられない」。そんなお子さんの姿に、
+            戸惑いや心配を感じたことはないでしょうか。<strong>書くことの困難（書字困難／ディスグラフィア）</strong>は、
+            本人の努力不足でも、理解力の低さでもありません。この記事では、書字困難とは何かを
+            公的な調査や研究をもとに整理し、家庭や学校でできる支援の考え方、そして
+            「書かずに音声で答える」という選択肢についてまとめました。
+        </p>
+    </div>
+
+    <div class="toc">
+        <strong>もくじ</strong>
+        <ol>
+            <li><a href="#what">「書字困難」とは何か</a></li>
+            <li><a href="#howmany">どのくらいの子どもに見られるのか</a></li>
+            <li><a href="#why">なぜ「書く」ことが負担になるのか</a></li>
+            <li><a href="#notlow">「書けない」＝「わかっていない」ではない</a></li>
+            <li><a href="#support">支援の考え方 ― 合理的配慮とICT活用</a></li>
+            <li><a href="#voice">「音声で答える」という選択肢とその研究</a></li>
+            <li><a href="#hikobae">ひこばえという、ひとつの試み</a></li>
+            <li><a href="#foryou">ご家庭・先生へ ― 相談先とお願い</a></li>
+            <li><a href="#refs">参考文献</a></li>
+        </ol>
+    </div>
+
+    <div class="prose">
+
+        <h2 class="sec" id="what">1. 「書字困難」とは何か</h2>
+        <p>
+            書字困難とは、知的な発達や視力・運動機能に大きな問題がないにもかかわらず、
+            文字を書くことに著しい困難がある状態を指す言葉です。英語では
+            <strong>ディスグラフィア（dysgraphia）</strong>と呼ばれることがあります。
+        </p>
+        <p>
+            医学的な診断基準では、書くことの困難は<strong>限局性学習症（SLD：Specific Learning Disorder）</strong>の
+            一つとして位置づけられています。アメリカ精神医学会の診断基準「DSM-5」では、SLDのうち
+            「書字表出の障害」として、綴り（文字の正確さ）や文章記述の明確さ・構成などの困難が挙げられています<sup class="cite"><a href="#ref1">[1]</a></sup>。
+            世界保健機関（WHO）の国際疾病分類「ICD-11」でも、
+            「書字表出の障害を伴う発達性学習症」が独立した項目として整理されています<sup class="cite"><a href="#ref2">[2]</a></sup>。
+        </p>
+        <p>
+            「読み」の困難であるディスレクシア（読字困難）と重なることも、書字困難が単独で見られることもあります。
+            また、自閉スペクトラム症（ASD）やADHDなど他の特性とあわせて、書くことのつまずきが現れる場合もあります。
+            現れ方は一人ひとり異なります。
+        </p>
+        <div class="note">
+            用語について：日本の教育現場では「学習障害（LD）」、医学領域では「限局性学習症（SLD）」という語が使われます。
+            本記事では読みやすさのため、書くことの困難を広く指す言葉として「書字困難」を用いています。
+        </div>
+
+        <h2 class="sec" id="howmany">2. どのくらいの子どもに見られるのか</h2>
+        <p>
+            文部科学省が全国の小・中学校を対象に行った調査（2022年）では、
+            知的発達に遅れはないものの<strong>「学習面または行動面で著しい困難を示す」とされた児童生徒は、通常の学級に約8.8％</strong>在籍すると報告されました。
+            2012年の同種の調査での約6.5％から上昇しています<sup class="cite"><a href="#ref3">[3]</a></sup>。
+            この数値は担任教員による回答にもとづく「可能性のある」割合であり、医学的な診断結果ではない点に注意が必要ですが、
+            クラスに複数人、書く・読む・計算するなどに困難を抱える子どもがいる可能性を示しています。
+        </p>
+        <p>
+            国際的にも、DSM-5では限局性学習症（SLD）全体の有病率を、学齢期の子どものおよそ
+            <strong>5〜15％</strong>としています<sup class="cite"><a href="#ref1">[1]</a></sup>。
+            書くことの困難は、決してまれなことではありません。
+        </p>
+
+        <h2 class="sec" id="why">3. なぜ「書く」ことが負担になるのか</h2>
+        <p>
+            「書く」という行為は、一見単純に見えて、実は多くの処理を同時に行う複雑な作業です。
+            文字の形を思い出す、手を動かして書く（運筆）、綴りを整える――こうした
+            <strong>「文字にする」ための処理（transcription）</strong>と、
+            何をどう表現するかを考える<strong>「考えて構成する」処理</strong>とを、
+            限られた注意やワーキングメモリ（作業記憶）の中で並行して行っています<sup class="cite"><a href="#ref4">[4]</a></sup>。
+        </p>
+        <p>
+            文字にすること自体に大きな労力がかかると、その分だけ「考える」ことに使える力が減ってしまいます。
+            これは「書くことの、単純ではないモデル（not-so-simple view of writing）」として研究の中で説明されてきた考え方です<sup class="cite"><a href="#ref5">[5]</a></sup>。
+            つまり、<strong>書く負担が大きい子どもは、考える力があっても、それを答案として出しきれない</strong>ことがあるのです。
+        </p>
+
+        <h2 class="sec" id="notlow">4. 「書けない」＝「わかっていない」ではない</h2>
+        <p>
+            ここが最も大切な点です。書くことに困難がある子どもは、内容を理解していないわけでも、
+            考えていないわけでもありません。<strong>「わかっている」ことと「書いて示せる」ことは、別の力</strong>です。
+        </p>
+        <p>
+            書くことのハードルが下がるだけで、驚くほど豊かな考えを表現できるようになる子どもは少なくありません。
+            大切なのは、「書けるようになるまで待つ」ことだけでなく、「書くこと以外の方法でも、
+            その子の理解や考えを受け止める」という選択肢を持つことです。
+        </p>
+
+        <h2 class="sec" id="support">5. 支援の考え方 ― 合理的配慮とICT活用</h2>
+        <p>
+            日本では、<strong>発達障害者支援法</strong>や
+            <strong>障害を理由とする差別の解消の推進に関する法律（障害者差別解消法）</strong>によって、
+            障害のある人が困りごとを取り除くための<strong>「合理的配慮」</strong>の提供が求められています。
+            2024年4月からは、民間事業者にも合理的配慮の提供が義務づけられました<sup class="cite"><a href="#ref6">[6]</a></sup>。
+            学校教育の中でも、一人ひとりの状態に応じた配慮や支援が重視されています。
+        </p>
+        <p>合理的配慮の例としては、次のようなものが挙げられます（あくまで一例です）。</p>
+        <ul>
+            <li>解答方法の工夫（口頭での回答、選択式、記入欄の拡大など）</li>
+            <li>タブレットやパソコン、音声入力などのICT（情報通信技術）機器の活用</li>
+            <li>時間延長や、書く量の調整</li>
+        </ul>
+        <p>
+            近年は、こうした支援の一つとして<strong>ICT・支援技術（Assistive Technology）</strong>の活用が広がっています。
+            書くことが困難な子どもにとって、キーボード入力や音声入力は、「考え」を外に出すための現実的な手段になり得ます<sup class="cite"><a href="#ref7">[7]</a></sup>。
+        </p>
+
+        <h2 class="sec" id="voice">6. 「音声で答える」という選択肢とその研究</h2>
+        <p>
+            話した言葉を文字に変換する音声認識（音声入力）は、書くことに困難のある子どもの支援手段として、
+            以前から研究されてきました。たとえば、書字に困難のある児童を対象にした研究では、
+            音声認識を用いることで、手書きに比べて<strong>文章の流暢さ（書き出せる量や進みやすさ）が向上した</strong>ことが報告されています<sup class="cite"><a href="#ref8">[8]</a></sup>。
+        </p>
+        <p>
+            もちろん、音声入力はすべてを解決する万能の方法ではありません。認識の誤りを直す作業や、
+            静かな環境が必要になることもあります。それでも、<strong>「書くこと」がボトルネックになっている子どもにとって、
+            話して答えるという選択肢は、学びを止めないための一つの助けになり得ます</strong>。
+            大事なのは、複数の選択肢の中から、その子に合う方法を選べるようにすることです。
+        </p>
+
+        <h2 class="sec" id="hikobae">7. ひこばえという、ひとつの試み</h2>
+        <p>
+            こうした背景のもとで、私たちが作ったのが、無料の学習支援WEBアプリ
+            <strong>「ひこばえ」</strong>です。問題用紙をスマートフォンで撮影し、答えたい場所をタップして、
+            <strong>声で答えを入力</strong>し、そのままPDFとして保存できます。撮影した画像や入力した答えは、
+            <strong>端末の外に送信されません</strong>（プライバシーに配慮した設計です）。
+        </p>
+
+        <div class="founder">
+            <h3>開発者から</h3>
+            <p>
+                私自身、ウィアー合同会社の代表であると同時に、<strong>長男が自閉スペクトラム症（ASD）</strong>である一人の親です。
+                日々の子育ての中で、「わかっているのに、書くという一つの作業がその子の“考える力”や“伝えたい気持ち”の前に
+                立ちはだかる」場面に、何度も出会ってきました。
+            </p>
+            <p>
+                その気づきと必要性から、「書くこと」ではなく「考えること」に集中できる道具があってほしいと考え、
+                ひこばえを作りました。そして、本当に必要としているご家庭やお子さんが、費用の心配なく使えるように、
+                <strong>無料で公開</strong>しています。派手な機能ではなく、目の前の困りごとを少しでも軽くすることを大切にしています。
+            </p>
+            <p style="margin-bottom:0;">
+                ― ウィアー合同会社 代表
+            </p>
+        </div>
+
+        <p>
+            ひこばえは、書字困難そのものを治療したり、診断したりするものではありません。
+            あくまで、日々の学習の中で「書く」負担を減らすための<strong>道具（選択肢）の一つ</strong>です。
+        </p>
+
+        <h2 class="sec" id="foryou">8. ご家庭・先生へ ― 相談先とお願い</h2>
+        <p>
+            お子さんの学びやすさについて気がかりがあるときは、一人で抱え込まず、専門機関に相談することをおすすめします。
+            相談先の例として、学校の担任・特別支援教育コーディネーター、教育委員会の就学・教育相談、
+            各自治体の発達障害者支援センターや児童発達支援、小児科・児童精神科などの医療機関があります。
+        </p>
+        <p>
+            そして何より、書くことにつまずいている子どもを前にしたとき、
+            「なまけている」「努力が足りない」と受け取らないでいただけたらと思います。
+            見え方を少し変えるだけで、その子の世界は大きく広がります。
+        </p>
+
+        <div class="disclaimer">
+            <strong>ご注意：</strong>本記事は、公開されている調査・研究・法令などをもとに、情報提供を目的として作成した一般的な解説です。
+            医学的な診断・治療・助言に代わるものではありません。診断や具体的な支援については、必ず医療・教育の専門家にご相談ください。
+            記載内容は作成時点の情報にもとづいており、最新の情報とは異なる場合があります。
+        </div>
+
+        <h2 class="sec" id="refs">参考文献</h2>
+        <div class="refs">
+            <ol>
+                <li id="ref1">American Psychiatric Association. (2013). <em>Diagnostic and Statistical Manual of Mental Disorders</em> (5th ed., DSM-5). Arlington, VA: American Psychiatric Publishing. （限局性学習症／書字表出の障害、および有病率に関する記述）</li>
+                <li id="ref2">World Health Organization. (2019/2022). <em>International Classification of Diseases 11th Revision (ICD-11)</em>. 「6A03 Developmental learning disorder（発達性学習症）」の項. <a href="https://icd.who.int/" target="_blank" rel="noopener noreferrer">https://icd.who.int/</a></li>
+                <li id="ref3">文部科学省. (2022). 「通常の学級に在籍する特別な教育的支援を必要とする児童生徒に関する調査結果について」. （2012年調査では約6.5％、2022年調査では約8.8％と報告）<a href="https://www.mext.go.jp/" target="_blank" rel="noopener noreferrer">https://www.mext.go.jp/</a></li>
+                <li id="ref4">McCutchen, D. (2000). Knowledge, processing, and working memory: Implications for a theory of writing. <em>Educational Psychologist, 35</em>(1), 13–23.</li>
+                <li id="ref5">Berninger, V. W., &amp; Winn, W. D. (2006). Implications of advancements in brain research and technology for writing development, writing instruction, and educational evolution. In C. A. MacArthur, S. Graham, &amp; J. Fitzgerald (Eds.), <em>Handbook of Writing Research</em>. New York: Guilford Press.（“not-so-simple view of writing”）</li>
+                <li id="ref6">内閣府. 「障害を理由とする差別の解消の推進に関する法律（障害者差別解消法）」および「発達障害者支援法」. （2024年4月より民間事業者の合理的配慮の提供が義務化）<a href="https://www8.cao.go.jp/shougai/" target="_blank" rel="noopener noreferrer">https://www8.cao.go.jp/shougai/</a></li>
+                <li id="ref7">MacArthur, C. A. (2009). Reflections on research on writing and technology for struggling writers. <em>Learning Disabilities Research &amp; Practice, 24</em>(2), 93–103.</li>
+                <li id="ref8">Quinlan, T. (2004). Speech recognition technology and students with writing difficulties: Improving fluency. <em>Journal of Educational Psychology, 96</em>(2), 337–346.</li>
+            </ol>
+            <p style="font-size:0.82rem;color:#888;">
+                ※ 参考文献は内容の理解を助けるために示したものです。各文献の著作権は各権利者に帰属します。
+                本記事は引用の範囲を超える転載を行っていません。
+            </p>
+        </div>
+
+    </div>
+
+    <div class="cta">
+        <a href="https://hikobae.we-re.net/" target="_blank" rel="noopener noreferrer">
+            ひこばえを使ってみる（無料）
+        </a>
+        <div class="cta-sub">
+            <a href="https://hikobae.we-re.net/lp.html">アプリの紹介ページ →</a>
+            &nbsp;・&nbsp;
+            <a href="https://hikobae.we-re.net/manual.html">つかいかた（マニュアル） →</a>
+        </div>
+
+        <div class="share-section">
+            <div class="share-label">この記事をシェア</div>
+            <div class="share-buttons">
+                <a class="share-btn share-x"
+                   href="https://twitter.com/intent/tweet?text=%E6%9B%B8%E5%AD%97%E5%9B%B0%E9%9B%A3%EF%BC%88%E3%83%87%E3%82%A3%E3%82%B9%E3%82%B0%E3%83%A9%E3%83%95%E3%82%A3%E3%82%A2%EF%BC%89%E3%81%A8%E3%81%AF%EF%BC%9F%E5%8E%9F%E5%9B%A0%E3%81%A8%E6%94%AF%E6%8F%B4%E3%81%AE%E8%80%83%E3%81%88%E6%96%B9%E3%80%81%E3%81%9D%E3%81%97%E3%81%A6%E3%80%8E%E6%9B%B8%E3%81%8B%E3%81%9A%E3%81%AB%E9%9F%B3%E5%A3%B0%E3%81%A7%E7%AD%94%E3%81%88%E3%82%8B%E3%80%8F%E3%81%A8%E3%81%84%E3%81%86%E9%81%B8%E6%8A%9E%E8%82%A2%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6%E3%80%81%E5%85%AC%E7%9A%84%E8%AA%BF%E6%9F%BB%E3%82%84%E7%A0%94%E7%A9%B6%E3%82%92%E3%82%82%E3%81%A8%E3%81%AB%E3%81%BE%E3%81%A8%E3%82%81%E3%81%BE%E3%81%97%E3%81%9F%E3%80%82%20%23%E6%9B%B8%E5%AD%97%E5%9B%B0%E9%9B%A3%20%23%E3%83%87%E3%82%A3%E3%82%B9%E3%83%AC%E3%82%AF%E3%82%B7%E3%82%A2%20%23%E5%AD%A6%E7%BF%92%E6%94%AF%E6%8F%B4%20%23%E7%99%BA%E9%81%94%E9%9A%9C%E5%AE%B3&url=https%3A%2F%2Fhikobae.we-re.net%2Fwriting-difficulty.html"
+                   target="_blank" rel="noopener noreferrer" aria-label="Xでシェア">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.254 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+                    X (Twitter)
+                </a>
+                <a class="share-btn share-fb"
+                   href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fhikobae.we-re.net%2Fwriting-difficulty.html"
+                   target="_blank" rel="noopener noreferrer" aria-label="Facebookでシェア">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    Facebook
+                </a>
+                <a class="share-btn share-line"
+                   href="https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Fhikobae.we-re.net%2Fwriting-difficulty.html"
+                   target="_blank" rel="noopener noreferrer" aria-label="LINEでシェア">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+                    LINE
+                </a>
+                <a class="share-btn share-hb"
+                   href="https://b.hatena.ne.jp/add?mode=confirm&url=https%3A%2F%2Fhikobae.we-re.net%2Fwriting-difficulty.html&title=%E6%9B%B8%E5%AD%97%E5%9B%B0%E9%9B%A3%EF%BC%88%E3%83%87%E3%82%A3%E3%82%B9%E3%82%B0%E3%83%A9%E3%83%95%E3%82%A3%E3%82%A2%EF%BC%89%E3%81%A8%E3%81%AF%20%E2%80%94%20%E5%8E%9F%E5%9B%A0%E3%83%BB%E6%94%AF%E6%8F%B4%E3%81%AE%E8%80%83%E3%81%88%E6%96%B9%E3%81%A8%E3%80%8E%E9%9F%B3%E5%A3%B0%E3%81%A7%E7%AD%94%E3%81%88%E3%82%8B%E3%80%8F%E3%81%A8%E3%81%84%E3%81%86%E9%81%B8%E6%8A%9E%E8%82%A2%EF%BD%9C%E3%81%B2%E3%81%93%E3%81%B0%E3%81%88"
+                   target="_blank" rel="noopener noreferrer" aria-label="はてなブックマークに追加">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M20.47 0C22.42 0 24 1.58 24 3.53v16.94C24 22.42 22.42 24 20.47 24H3.53C1.58 24 0 22.42 0 20.47V3.53C0 1.58 1.58 0 3.53 0h16.94zm-3.705 14.47c-.47 0-.855.384-.855.854 0 .47.384.854.855.854.47 0 .854-.384.854-.854 0-.47-.384-.854-.854-.854zm-7.965-6.57c1.31 0 2.24.24 2.79.73.55.49.83 1.15.83 1.98 0 .57-.13 1.04-.4 1.43-.17.25-.43.47-.77.66.51.19.9.49 1.16.9.26.4.39.89.39 1.46 0 .53-.11 1-.34 1.42-.22.42-.53.75-.91.99-.24.15-.59.26-1.06.33-.63.1-1.05.14-1.26.14H5.97V7.9h2.83zm-.16 5.33H7.73v2.16h.91c.77 0 1.29-.03 1.55-.1.26-.06.47-.19.61-.37.15-.18.22-.41.22-.7 0-.27-.07-.5-.2-.67-.14-.17-.34-.29-.6-.34-.17-.03-.59-.04-1.35-.04zm8.13-5.33v8.77h-1.51V7.9h1.51zm-8.05 1.27H7.73v2.05h.86c.72 0 1.19-.03 1.42-.09.23-.07.4-.18.53-.34.13-.17.19-.37.19-.62 0-.24-.06-.44-.17-.6-.12-.15-.29-.26-.52-.31-.15-.04-.55-.06-1.21-.06z"/></svg>
+                    はてブ
+                </a>
+                <button class="share-btn share-copy" onclick="(function(b){navigator.clipboard.writeText('https://hikobae.we-re.net/writing-difficulty.html').then(function(){var t=b.textContent;b.textContent='✓ コピーしました';setTimeout(function(){b.textContent=t},2000)});})(this)" aria-label="URLをコピー">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    URLをコピー
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    © ひこばえ / Hikobae<br>
+    開発・運営：ウィアー合同会社 <a href="https://we-re.net/" target="_blank" rel="noopener noreferrer">we-re.net</a><br>
+    Copyright © 2026 We are, LLC All rights reserved.
+</footer>
+
+</body>
+</html>
