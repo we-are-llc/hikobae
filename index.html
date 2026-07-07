@@ -9,6 +9,11 @@
     <title>ひこばえ - 書くことが苦手な子どものための学習支援WEBアプリ</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>" />
 
+    <!-- PWA（ホーム画面に追加・オフライン対応） -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="ひこばえ" />
+
     <!-- SEO -->
     <meta name="description" content="書字が苦手なお子さんが、問題用紙を音声で答えられる無料WEBアプリ。スマホで撮影→音声入力→PDF保存まで完全オフラインで動作します。">
     <meta name="keywords" content="学習支援,書字困難,ディスレクシア,発達障害,音声入力,学習障害,子ども,ひこばえ">
@@ -71,5 +76,15 @@
       </div>
     </noscript>
     <script type="module" src="/src/main.jsx"></script>
+    <!-- Service Worker 登録（オフライン利用のため） -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js').catch(function (e) {
+            console.warn('SW registration failed:', e);
+          });
+        });
+      }
+    </script>
   </body>
 </html>

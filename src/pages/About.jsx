@@ -90,6 +90,7 @@ export default function About({ onNavigate }) {
             <div className="about-changelog-entry">
               <div className="about-changelog-date">2026-07-02</div>
               <ul className="about-changelog-list">
+                <li>ホーム画面に追加してオフラインでも起動・利用できるように対応（PWA化）</li>
                 <li>確認画面（かくにん・しゅつりょく）のスクロールが効かなかった不具合を修正</li>
                 <li>読み上げ中の回答欄をハイライト表示・自動スクロールする機能を追加</li>
                 <li>未回答欄がある場合に読み上げ番号が画面表示とズレていた不具合を修正</li>
