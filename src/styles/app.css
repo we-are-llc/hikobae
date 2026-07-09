@@ -758,6 +758,12 @@ button:disabled {
   border-color: var(--answer);
 }
 
+.mode-btn.active[data-mode='draw'] {
+  background: #6366F1;
+  color: #fff;
+  border-color: #6366F1;
+}
+
 .mode-btn.active[data-mode='edit'] {
   background: var(--edit);
   color: #fff;

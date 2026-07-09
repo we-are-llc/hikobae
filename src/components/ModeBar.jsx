@@ -1,6 +1,6 @@
 const MODES = [
-  { id: 'place', label: 'ばしょをつくる', icon: '✏️', hint: '画像をタップして回答欄をつくる・動かす・削除する' },
-  { id: 'answer', label: 'こたえをいれる', icon: '🎙', hint: '回答欄をタップして音声入力する' },
+  { id: 'place', label: 'つくる', icon: '✏️', hint: '画像をタップして回答欄をつくる・動かす・削除する' },
+  { id: 'answer', label: 'こたえる', icon: '🎙', hint: '回答欄をタップして音声入力する' },
   { id: 'draw', label: 'かく', icon: '🖊', hint: 'ゆびやペンで書く・かく（2本指でズーム/移動）' },
 ];
 
