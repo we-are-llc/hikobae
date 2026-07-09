@@ -149,16 +149,16 @@ export default function AnswerBox({
 
   const colors = {
     place: {
+      // 作成時は背景を透明にして、下の問題用紙の文字が読めるようにする
       border: isSelected ? `2px solid ${palette.main}` : `2px dashed ${palette.main}`,
-      background: palette.bg,
+      background: 'transparent',
       cursor: 'move',
-      labelBg: palette.main,
     },
     answer: {
+      // 回答モードは入力文字を読みやすくするため塗りを残す
       border: `2px solid ${box.text ? palette.main : '#94A3B8'}`,
       background: box.text ? palette.bg : 'rgba(255,255,255,0.75)',
       cursor: 'pointer',
-      labelBg: palette.main,
     },
   };
 
@@ -182,7 +182,7 @@ export default function AnswerBox({
       {/* Label */}
       <div
         className="answer-box-label"
-        style={{ background: c.labelBg, color: '#fff' }}
+        style={{ color: palette.main }}
       >
         {index + 1}
       </div>

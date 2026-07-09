@@ -771,11 +771,14 @@ button:disabled {
   position: absolute;
   top: -18px;
   left: 0;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 1px 5px;
-  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 0;
   white-space: nowrap;
+  /* 背景を透明にしても番号が読めるよう、白いふちどりを付ける */
+  text-shadow:
+    0 0 2px #fff, 0 0 2px #fff, 0 0 3px #fff,
+    1px 1px 2px #fff, -1px -1px 2px #fff;
 }
 
 /* Resize handles */
@@ -1615,11 +1618,12 @@ button:disabled {
   align-items: center;
   gap: 2px;
   padding: 4px;
-  background: rgba(30, 30, 30, 0.72);
+  /* 背景の問題用紙が透けて見えるよう半透明に */
+  background: rgba(30, 30, 30, 0.32);
   border-radius: 22px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
   z-index: 20;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(3px);
 }
 
 .zoom-controls button {
@@ -1628,7 +1632,7 @@ button:disabled {
   min-height: 40px;
   padding: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.6);
   color: #1a1a1a;
   font-size: 22px;
   font-weight: 700;
@@ -1646,4 +1650,5 @@ button:disabled {
   padding: 2px 0;
   min-width: 32px;
   text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
