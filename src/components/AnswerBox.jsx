@@ -26,6 +26,7 @@ export default function AnswerBox({
   mode,
   isSelected,
   index,
+  fontScale = 1,
   overlayRef,
   onSelect,
   onUpdate,
@@ -190,7 +191,7 @@ export default function AnswerBox({
 
       {/* Content */}
       {box.text ? (
-        <span className="answer-box-text" style={{ fontSize: box.fontSize || 14 }}>{box.text}</span>
+        <span className="answer-box-text" style={{ fontSize: (box.fontSize || 14) * fontScale }}>{box.text}</span>
       ) : (
         mode === 'answer' && (
           <span className="answer-box-placeholder">タップ</span>

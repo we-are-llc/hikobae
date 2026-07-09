@@ -13,6 +13,9 @@ function generateId() {
 
 const DEFAULT_BOX_W = 0.24;
 const DEFAULT_BOX_H = 0.065;
+// PDF側の文字スケール基準幅（pdfExport.js の SCREEN_REF_W と一致させること）。
+// 画面の文字も「表示中の画像幅 ÷ この値」でスケールし、画面とPDFの見た目を揃える（WYSIWYG）。
+const SCREEN_REF_W = 420;
 const ZOOM_MIN = 1;
 const ZOOM_MAX = 3;
 const ZOOM_STEP = 0.5;
@@ -44,6 +47,8 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   const [drawColor, setDrawColor] = useState(DRAW_COLORS[0]);
   const [eraserOn, setEraserOn] = useState(false);
   const [imgAspect, setImgAspect] = useState(1.414); // 高さ/幅。画像読み込み時に更新
+  // 表示中の画像幅 ÷ SCREEN_REF_W。回答欄の文字サイズを画面表示に合わせPDFと揃える
+  const [fontScale, setFontScale] = useState(1);
   const overlayRef = useRef(null);
   const scrollRef = useRef(null);
   const saveTimerRef = useRef(null);
@@ -120,6 +125,20 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   }, [showZoom]);
 
   usePinchZoom(scrollRef, zoom, setZoom, { min: ZOOM_MIN, max: ZOOM_MAX });
+
+  // 表示中の画像幅を計測して文字スケールを更新（ズーム・回転・リサイズに追従）
+  useEffect(() => {
+    const el = overlayRef.current;
+    if (!el) return;
+    const update = () => {
+      const w = el.getBoundingClientRect().width;
+      if (w) setFontScale(w / SCREEN_REF_W);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const handleUndo = useCallback(() => {
     setHistory((prev) => {
@@ -427,6 +446,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
                 box={box}
                 mode={mode}
                 index={i}
+                fontScale={fontScale}
                 isSelected={selectedBoxId === box.id}
                 overlayRef={overlayRef}
                 onSelect={setSelectedBoxId}
