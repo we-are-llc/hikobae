@@ -224,24 +224,36 @@ export default function AnswerBox({
             </div>
           )}
 
-          <button
-            className="box-mic-btn"
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={(e) => { e.stopPropagation(); onAnswer(box.id); }}
-            aria-label="音声入力"
-          >
-            🎙
-          </button>
-          <button
-            className="box-delete-btn"
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={handleDelete}
-            aria-label="削除"
-          >
-            🗑
-          </button>
+          {!expanded && (
+            <div className="box-actions">
+              <button
+                className="box-mic-btn"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => { e.stopPropagation(); onAnswer(box.id); }}
+                aria-label="音声入力"
+              >
+                🎙
+              </button>
+              <button
+                className="box-delete-btn"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={handleDelete}
+                aria-label="削除"
+              >
+                🗑
+              </button>
+              <button
+                className="box-expand-btn"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
+                aria-label="もっと（文字サイズ・色）"
+              >
+                ⚙
+              </button>
+            </div>
+          )}
 
-          {expanded ? (
+          {expanded && (
             <>
               <div className="box-fontsize-controls">
                 <button
@@ -290,15 +302,6 @@ export default function AnswerBox({
                 ▲ とじる
               </button>
             </>
-          ) : (
-            <button
-              className="box-expand-btn"
-              onPointerDown={(e) => e.stopPropagation()}
-              onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
-              aria-label="もっと（文字サイズ・色）"
-            >
-              ⚙
-            </button>
           )}
 
           {HANDLES.map((h) => (
