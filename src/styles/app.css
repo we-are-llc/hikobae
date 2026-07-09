@@ -877,13 +877,14 @@ button:disabled {
   height: 44px;
   min-height: unset;
   padding: 0;
-  background: var(--danger);
+  background: rgba(239, 68, 68, 0.72);
+  backdrop-filter: blur(2px);
   color: #fff;
   border-radius: 50%;
   font-size: 18px;
   z-index: 20;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
   line-height: 1;
 }
 
@@ -896,13 +897,14 @@ button:disabled {
   height: 44px;
   min-height: unset;
   padding: 0;
-  background: #10B981;
+  background: rgba(16, 185, 129, 0.72);
+  backdrop-filter: blur(2px);
   color: #fff;
   border-radius: 50%;
   font-size: 18px;
   z-index: 20;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
   line-height: 1;
 }
 
@@ -970,7 +972,8 @@ button:disabled {
   height: 38px;
   min-height: unset;
   padding: 0 16px;
-  background: #6366f1;
+  background: rgba(99, 102, 241, 0.72);
+  backdrop-filter: blur(2px);
   color: #fff;
   border-radius: 20px;
   font-size: 13px;
@@ -981,9 +984,20 @@ button:disabled {
   touch-action: manipulation;
 }
 
+/* 「もっと」（展開前）は歯車アイコンのみの丸ボタンに */
+.box-expand-btn:not(.box-expand-close) {
+  width: 40px;
+  height: 40px;
+  bottom: -40px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 19px;
+}
+
 .box-expand-btn.box-expand-close {
   bottom: -124px;
-  background: #94A3B8;
+  background: rgba(148, 163, 184, 0.78);
+  backdrop-filter: blur(2px);
 }
 
 /* Delete confirmation overlay */

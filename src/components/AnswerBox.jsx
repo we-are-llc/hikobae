@@ -295,8 +295,9 @@ export default function AnswerBox({
               className="box-expand-btn"
               onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
+              aria-label="もっと（文字サイズ・色）"
             >
-              ⚙ もっと
+              ⚙
             </button>
           )}
 
