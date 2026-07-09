@@ -3,6 +3,7 @@ import { warpPerspective } from '../utils/perspective.js';
 import { saveSession } from '../utils/db.js';
 import { detectDocumentCorners } from '../utils/detectEdges.js';
 import { usePinchZoom } from '../hooks/usePinchZoom.js';
+import { useAutoHide } from '../hooks/useAutoHide.js';
 import {
   applyAdjustments,
   downscale,
@@ -61,12 +62,16 @@ export default function Crop({ name, rawPages, onNavigate }) {
     setPhase('crop');
   }, [pageIdx]);
 
+  const { visible: zoomVisible, show: showZoom } = useAutoHide(3000);
+
   const zoomIn = useCallback(() => {
+    showZoom();
     setZoom((z) => Math.min(ZOOM_MAX, Math.round((z + ZOOM_STEP) * 100) / 100));
-  }, []);
+  }, [showZoom]);
   const zoomOut = useCallback(() => {
+    showZoom();
     setZoom((z) => Math.max(ZOOM_MIN, Math.round((z - ZOOM_STEP) * 100) / 100));
-  }, []);
+  }, [showZoom]);
 
   usePinchZoom(scrollRef, zoom, setZoom, { min: ZOOM_MIN, max: ZOOM_MAX });
 
@@ -326,7 +331,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
         </div>
       </div>
 
-      <div className="crop-scroll" ref={scrollRef}>
+      <div className="crop-scroll" ref={scrollRef} onPointerDownCapture={showZoom}>
         <div ref={containerRef} className="crop-container" style={{ width: `${zoom * 100}%` }}>
           <img
             ref={imgRef}
@@ -379,7 +384,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
       </div>
 
       {imgLoaded && (
-        <div className="zoom-controls">
+        <div className={`zoom-controls${zoomVisible ? '' : ' is-hidden'}`}>
           <button onClick={zoomIn} disabled={zoom >= ZOOM_MAX} aria-label="拡大">
             ＋
           </button>

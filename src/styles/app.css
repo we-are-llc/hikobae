@@ -1624,6 +1624,14 @@ button:disabled {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
   z-index: 20;
   backdrop-filter: blur(3px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* 普段は非表示。操作時のみ表示し、数秒後に自動で隠れる */
+.zoom-controls.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%) scale(0.9);
 }
 
 .zoom-controls button {

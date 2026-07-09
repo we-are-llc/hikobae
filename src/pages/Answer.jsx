@@ -4,6 +4,7 @@ import AnswerBox from '../components/AnswerBox.jsx';
 import VoiceModal from '../components/VoiceModal.jsx';
 import { saveSession } from '../utils/db.js';
 import { usePinchZoom } from '../hooks/usePinchZoom.js';
+import { useAutoHide } from '../hooks/useAutoHide.js';
 
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -81,12 +82,16 @@ export default function Answer({ session, onNavigate, onUpdate }) {
     pendingHistoryRef.current = null;
   }, [pageIndex]);
 
+  const { visible: zoomVisible, show: showZoom } = useAutoHide(3000);
+
   const zoomIn = useCallback(() => {
+    showZoom();
     setZoom((z) => Math.min(ZOOM_MAX, Math.round((z + ZOOM_STEP) * 100) / 100));
-  }, []);
+  }, [showZoom]);
   const zoomOut = useCallback(() => {
+    showZoom();
     setZoom((z) => Math.max(ZOOM_MIN, Math.round((z - ZOOM_STEP) * 100) / 100));
-  }, []);
+  }, [showZoom]);
 
   usePinchZoom(scrollRef, zoom, setZoom, { min: ZOOM_MIN, max: ZOOM_MAX });
 
@@ -242,7 +247,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
       </div>
 
       {/* Scrollable image area */}
-      <div className="answer-scroll" ref={scrollRef}>
+      <div className="answer-scroll" ref={scrollRef} onPointerDownCapture={showZoom}>
         <div className="answer-image-container" style={{ width: `${zoom * 100}%` }}>
           <img
             src={currentPage?.imageData}
@@ -276,8 +281,8 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         </div>
       </div>
 
-      {/* Zoom controls（2本指ピンチでもズーム可。ボタンはデスクトップ等の補助） */}
-      <div className="zoom-controls">
+      {/* Zoom controls（普段は非表示。画面をさわると表示し、数秒で自動的に隠れる） */}
+      <div className={`zoom-controls${zoomVisible ? '' : ' is-hidden'}`}>
         <button onClick={zoomIn} disabled={zoom >= ZOOM_MAX} aria-label="拡大">
           ＋
         </button>
