@@ -13,6 +13,7 @@ export function usePinchZoom(scrollRef, zoom, setZoom, { min = 1, max = 3 } = {}
 
   const gesture = useRef(null); // { startDist, startZoom }
   const pending = useRef(null); // { fracX, fracY, midX, midY }
+  const lastMid = useRef(null); // 直前フレームの中点（ズーム変化なし時のパン用）
 
   // ズーム変更後、ピンチ中心を保持するようスクロール位置を補正
   useLayoutEffect(() => {
@@ -36,6 +37,7 @@ export function usePinchZoom(scrollRef, zoom, setZoom, { min = 1, max = 3 } = {}
     const onStart = (e) => {
       if (e.touches.length === 2) {
         gesture.current = { startDist: distance(e.touches), startZoom: zoomRef.current };
+        lastMid.current = null;
       }
     };
 
@@ -47,23 +49,32 @@ export function usePinchZoom(scrollRef, zoom, setZoom, { min = 1, max = 3 } = {}
       const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
       const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
 
-      // ズーム適用前の、中点の下にある内容の割合を記録（補正に使う）
-      pending.current = {
-        fracX: (el.scrollLeft + midX) / el.scrollWidth,
-        fracY: (el.scrollTop + midY) / el.scrollHeight,
-        midX,
-        midY,
-      };
-
       const ratio = distance(e.touches) / gesture.current.startDist;
       const next = Math.max(min, Math.min(max, gesture.current.startZoom * ratio));
-      setZoom(Math.round(next * 100) / 100);
+      const rounded = Math.round(next * 100) / 100;
+
+      if (rounded !== zoomRef.current) {
+        // ズーム変化あり：中点の下の内容を保持するようスクロールを補正（useLayoutEffect）
+        pending.current = {
+          fracX: (el.scrollLeft + midX) / el.scrollWidth,
+          fracY: (el.scrollTop + midY) / el.scrollHeight,
+          midX,
+          midY,
+        };
+        setZoom(rounded);
+      } else if (lastMid.current) {
+        // ズーム変化なし：2本指のパン（中点の移動分だけスクロール）
+        el.scrollLeft -= midX - lastMid.current.x;
+        el.scrollTop -= midY - lastMid.current.y;
+      }
+      lastMid.current = { x: midX, y: midY };
     };
 
     const onEnd = (e) => {
       if (e.touches.length < 2) {
         gesture.current = null;
         pending.current = null;
+        lastMid.current = null;
       }
     };
 

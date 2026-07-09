@@ -5,6 +5,7 @@ import VoiceModal from '../components/VoiceModal.jsx';
 import { saveSession } from '../utils/db.js';
 import { usePinchZoom } from '../hooks/usePinchZoom.js';
 import { useAutoHide } from '../hooks/useAutoHide.js';
+import { strokeToPath } from '../utils/stroke.js';
 
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -16,6 +17,18 @@ const ZOOM_MIN = 1;
 const ZOOM_MAX = 3;
 const ZOOM_STEP = 0.5;
 
+// フリーハンド：色は1色、太さは3段階（画像幅の1/1000を1単位）
+const DRAW_COLOR = '#2563EB';
+const DRAW_WIDTHS = [
+  { id: 'thin', w: 6, dot: 8 },
+  { id: 'medium', w: 10, dot: 12 },
+  { id: 'thick', w: 16, dot: 17 },
+];
+// SVG ビューボックスの横幅（線幅の単位＝ビューボックス幅の1/1000 に一致させる）
+const VBW = 1000;
+// 描画中に点を間引く最小移動量（割合）
+const MIN_POINT_DIST = 0.0025;
+
 export default function Answer({ session, onNavigate, onUpdate }) {
   const [mode, setMode] = useState('place');
   const [pageIndex, setPageIndex] = useState(0);
@@ -25,6 +38,8 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   const [saving, setSaving] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [history, setHistory] = useState([]);
+  const [drawWidth, setDrawWidth] = useState(10);
+  const [imgAspect, setImgAspect] = useState(1.414); // 高さ/幅。画像読み込み時に更新
   const overlayRef = useRef(null);
   const scrollRef = useRef(null);
   const saveTimerRef = useRef(null);
@@ -32,17 +47,24 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   const prevAnsweredRef = useRef(0);
   const historyTimerRef = useRef(null);
   const pendingHistoryRef = useRef(null);
+  const drawingRef = useRef(null);       // { points: [[x,y]…], pointerId }
+  const liveRef = useRef(null);          // 描画中のライブ <path> 要素
+  const activeTouchesRef = useRef(new Set());
+  const pinchingRef = useRef(false);
   useEffect(() => { sessionRef.current = session; }, [session]);
 
   const currentPage = session.pages[pageIndex];
   const boxes = currentPage?.boxes ?? [];
+  const strokes = currentPage?.strokes ?? [];
+  const VBH = VBW * imgAspect;
 
   // Functional update avoids stale-closure overwrites when answers are confirmed in quick succession
   const updateSession = useCallback(
     (updater) => {
-      // Capture pre-update boxes for undo; debounced so rapid drags produce one history entry
+      // Capture pre-update boxes+strokes for undo; debounced so rapid drags produce one history entry
       if (!historyTimerRef.current) {
-        pendingHistoryRef.current = sessionRef.current.pages[pageIndex]?.boxes ?? [];
+        const pg = sessionRef.current.pages[pageIndex];
+        pendingHistoryRef.current = { boxes: pg?.boxes ?? [], strokes: pg?.strokes ?? [] };
       }
       clearTimeout(historyTimerRef.current);
       historyTimerRef.current = setTimeout(() => {
@@ -98,11 +120,13 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   const handleUndo = useCallback(() => {
     setHistory((prev) => {
       if (!prev.length) return prev;
-      const boxes = prev[prev.length - 1];
+      const snap = prev[prev.length - 1];
       setSelectedBoxId(null);
       onUpdate((s) => ({
         ...s,
-        pages: s.pages.map((p, i) => (i === pageIndex ? { ...p, boxes } : p)),
+        pages: s.pages.map((p, i) =>
+          i === pageIndex ? { ...p, boxes: snap.boxes, strokes: snap.strokes } : p
+        ),
         updatedAt: Date.now(),
       }));
       clearTimeout(saveTimerRef.current);
@@ -186,6 +210,69 @@ export default function Answer({ session, onNavigate, onUpdate }) {
     setSelectedBoxId(null);
   }, []);
 
+  // ---- フリーハンド描画 ----
+  const toFrac = useCallback((clientX, clientY) => {
+    const rect = overlayRef.current.getBoundingClientRect();
+    return {
+      x: Math.max(0, Math.min(1, (clientX - rect.left) / rect.width)),
+      y: Math.max(0, Math.min(1, (clientY - rect.top) / rect.height)),
+    };
+  }, []);
+
+  const setLivePath = useCallback((points) => {
+    if (liveRef.current) {
+      liveRef.current.setAttribute('d', strokeToPath(points, VBW, VBW * imgAspect));
+    }
+  }, [imgAspect]);
+
+  const handleDrawPointerDown = useCallback((e) => {
+    if (mode !== 'draw') return;
+    if (e.pointerType === 'touch') {
+      activeTouchesRef.current.add(e.pointerId);
+      // 2本指目が触れたらピンチ（ズーム/パン）とみなし、描きかけは破棄
+      if (activeTouchesRef.current.size >= 2) {
+        pinchingRef.current = true;
+        drawingRef.current = null;
+        setLivePath([]);
+        return;
+      }
+    }
+    pinchingRef.current = false;
+    const { x, y } = toFrac(e.clientX, e.clientY);
+    drawingRef.current = { points: [[x, y]], pointerId: e.pointerId };
+    try { overlayRef.current.setPointerCapture?.(e.pointerId); } catch { /* noop */ }
+    setLivePath(drawingRef.current.points);
+  }, [mode, toFrac, setLivePath]);
+
+  const handleDrawPointerMove = useCallback((e) => {
+    const d = drawingRef.current;
+    if (!d || pinchingRef.current || e.pointerId !== d.pointerId) return;
+    const { x, y } = toFrac(e.clientX, e.clientY);
+    const last = d.points[d.points.length - 1];
+    if (Math.hypot(x - last[0], y - last[1]) < MIN_POINT_DIST) return;
+    d.points.push([x, y]);
+    setLivePath(d.points);
+  }, [toFrac, setLivePath]);
+
+  const handleDrawPointerUp = useCallback((e) => {
+    if (e.pointerType === 'touch') {
+      activeTouchesRef.current.delete(e.pointerId);
+      if (activeTouchesRef.current.size < 2) pinchingRef.current = false;
+    }
+    const d = drawingRef.current;
+    if (!d || e.pointerId !== d.pointerId) return;
+    drawingRef.current = null;
+    setLivePath([]); // ライブ表示をクリア
+    if (d.points.length >= 1) {
+      const stroke = { id: generateId(), color: DRAW_COLOR, width: drawWidth, points: d.points };
+      updateSession((p) => ({ strokes: [...(p.strokes ?? []), stroke] }));
+    }
+  }, [drawWidth, updateSession, setLivePath]);
+
+  const handleClearStrokes = useCallback(() => {
+    updateSession(() => ({ strokes: [] }));
+  }, [updateSession]);
+
   const voiceBox = voiceBoxId ? boxes.find((b) => b.id === voiceBoxId) : null;
 
   const totalAnswered = session.pages.reduce(
@@ -193,6 +280,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
     0
   );
   const totalBoxes = session.pages.reduce((acc, p) => acc + p.boxes.length, 0);
+  const totalStrokes = session.pages.reduce((acc, p) => acc + (p.strokes?.length ?? 0), 0);
 
   useEffect(() => {
     if (totalBoxes > 0 && totalAnswered === totalBoxes && prevAnsweredRef.current < totalBoxes) {
@@ -253,14 +341,56 @@ export default function Answer({ session, onNavigate, onUpdate }) {
             src={currentPage?.imageData}
             alt={`ページ ${pageIndex + 1}`}
             draggable={false}
+            onLoad={(e) => {
+              const { naturalWidth: w, naturalHeight: h } = e.target;
+              if (w && h) setImgAspect(h / w);
+            }}
           />
+
+          {/* フリーハンドの描画レイヤー（確定済み＋描画中） */}
+          <svg
+            className="stroke-layer"
+            viewBox={`0 0 ${VBW} ${VBH}`}
+            preserveAspectRatio="none"
+          >
+            {strokes.map((s) => (
+              <path
+                key={s.id}
+                d={strokeToPath(s.points, VBW, VBH)}
+                stroke={s.color}
+                strokeWidth={s.width}
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            ))}
+            {/* 描画中のライブパス（d は ref で命令的に更新し、再描画で消えないようにする） */}
+            <path
+              ref={liveRef}
+              stroke={DRAW_COLOR}
+              strokeWidth={drawWidth}
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+
           <div
             ref={overlayRef}
-            className="answer-overlay"
+            className={`answer-overlay${mode === 'draw' ? ' mode-draw' : ''}`}
             onClick={handleOverlayClick}
+            onPointerDown={handleDrawPointerDown}
+            onPointerMove={handleDrawPointerMove}
+            onPointerUp={handleDrawPointerUp}
+            onPointerCancel={handleDrawPointerUp}
             style={{
-              cursor: mode === 'place' && !selectedBoxId ? 'crosshair' : 'default',
-              touchAction: 'manipulation',
+              cursor:
+                mode === 'draw'
+                  ? 'crosshair'
+                  : mode === 'place' && !selectedBoxId
+                  ? 'crosshair'
+                  : 'default',
+              touchAction: mode === 'draw' ? 'none' : 'manipulation',
             }}
           >
             {boxes.map((box, i) => (
@@ -292,12 +422,36 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         </button>
       </div>
 
+      {/* Draw tools（描くモードのみ表示） */}
+      {mode === 'draw' && (
+        <div className="draw-tools">
+          {DRAW_WIDTHS.map((w) => (
+            <button
+              key={w.id}
+              className={`draw-w${drawWidth === w.w ? ' active' : ''}`}
+              onClick={() => setDrawWidth(w.w)}
+              aria-label={`太さ ${w.id}`}
+            >
+              <span style={{ width: w.dot, height: w.dot }} />
+            </button>
+          ))}
+          <button
+            className="draw-clear"
+            onClick={handleClearStrokes}
+            disabled={strokes.length === 0}
+            aria-label="かいたものを全部けす"
+          >
+            けす
+          </button>
+        </div>
+      )}
+
       {/* Footer */}
       <div className="answer-footer">
         <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
           {totalAnswered} / {totalBoxes} こたえた
         </div>
-        {mode === 'place' && (
+        {(mode === 'place' || mode === 'draw') && (
           <button
             className="btn-secondary answer-undo-btn"
             onClick={handleUndo}
@@ -311,7 +465,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         <button
           className="btn-green"
           onClick={() => onNavigate('confirm', sessionRef.current)}
-          disabled={totalBoxes === 0}
+          disabled={totalBoxes === 0 && totalStrokes === 0}
         >
           だす →
         </button>

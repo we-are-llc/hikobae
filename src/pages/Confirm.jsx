@@ -12,6 +12,9 @@ export default function Confirm({ session, onNavigate }) {
   );
 
   const answered = allBoxes.filter((b) => b.text);
+  const hasStrokes = session.pages.some((p) => (p.strokes?.length ?? 0) > 0);
+  // 回答欄がなくても手書きがあればPDF出力できる
+  const canExport = allBoxes.length > 0 || hasStrokes;
 
   // アクティブ項目が変わったら自動スクロール
   useEffect(() => {
@@ -106,7 +109,7 @@ export default function Confirm({ session, onNavigate }) {
           );
         })}
 
-        {allBoxes.length === 0 && (
+        {allBoxes.length === 0 && !hasStrokes && (
           <div className="loading" style={{ flex: 'unset', paddingTop: 40 }}>
             <div style={{ fontSize: 32 }}>📝</div>
             <div>回答欄がまだありません</div>
@@ -117,6 +120,16 @@ export default function Confirm({ session, onNavigate }) {
             >
               かいとうがめんに もどる
             </button>
+          </div>
+        )}
+
+        {allBoxes.length === 0 && hasStrokes && (
+          <div className="loading" style={{ flex: 'unset', paddingTop: 40 }}>
+            <div style={{ fontSize: 32 }}>🖊</div>
+            <div>手書きで書きこみました</div>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+              このままPDFにして保存できます
+            </div>
           </div>
         )}
       </div>
@@ -130,7 +143,7 @@ export default function Confirm({ session, onNavigate }) {
         <button
           className="btn-green"
           onClick={handleExport}
-          disabled={exporting || allBoxes.length === 0}
+          disabled={exporting || !canExport}
         >
           {exporting ? (
             <>

@@ -90,6 +90,7 @@ export default function About({ onNavigate }) {
             <div className="about-changelog-entry">
               <div className="about-changelog-date">2026-07-09</div>
               <ul className="about-changelog-list">
+                <li>フリーハンドで手書き・作図ができる「かく」モードを追加（指・スタイラス対応、太さ3段階、PDFにも反映）</li>
                 <li>きりとり画面・かいとう画面のズームを2本指ピンチ操作に対応</li>
                 <li>入力欄の作成時に、入力欄の背景と番号を透明化して背景の問題用紙を読みやすく改善</li>
                 <li>ズームボタンを普段は非表示にし、画面をさわると表示・数秒で自動的に隠れるように改善（背景に集中しやすく）</li>

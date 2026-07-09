@@ -1,6 +1,7 @@
 const MODES = [
   { id: 'place', label: 'ばしょをつくる', icon: '✏️', hint: '画像をタップして回答欄をつくる・動かす・削除する' },
   { id: 'answer', label: 'こたえをいれる', icon: '🎙', hint: '回答欄をタップして音声入力する' },
+  { id: 'draw', label: 'かく', icon: '🖊', hint: 'ゆびやペンで書く・かく（2本指でズーム/移動）' },
 ];
 
 export default function ModeBar({ mode, onChange }) {
@@ -27,4 +28,5 @@ export default function ModeBar({ mode, onChange }) {
 export const MODE_HINTS = {
   place: '空いているところをタップして回答欄をつくる・選んで動かす',
   answer: '回答欄をタップして音声で入力する',
+  draw: 'ゆびやペンで書く・かく（2本指でズーム・移動）',
 };

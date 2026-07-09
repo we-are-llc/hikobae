@@ -65,6 +65,11 @@ async function renderPageToCanvas(page) {
   // ページ画像を描画
   ctx.drawImage(img, 0, 0, W, H);
 
+  // フリーハンドのストローク（回答欄より下に描く）
+  for (const stroke of page.strokes ?? []) {
+    drawStroke(ctx, stroke, W, H);
+  }
+
   // 回答欄を重ねて描画
   for (const box of page.boxes) {
     if (!box.text) continue;
@@ -72,6 +77,36 @@ async function renderPageToCanvas(page) {
   }
 
   return canvas;
+}
+
+// フリーハンドのストロークを描画（点列は割合座標、線幅は画像幅の1/1000単位）
+function drawStroke(ctx, stroke, W, H) {
+  const pts = stroke.points;
+  if (!pts || pts.length === 0) return;
+
+  ctx.save();
+  ctx.strokeStyle = stroke.color || '#2563EB';
+  ctx.lineWidth = ((stroke.width || 10) / 1000) * W;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0] * W, pts[0][1] * H);
+  if (pts.length === 1) {
+    ctx.lineTo(pts[0][0] * W + 0.5, pts[0][1] * H);
+  } else {
+    // 二次ベジェで平滑化（画面表示と同じ描き方）
+    for (let i = 1; i < pts.length - 1; i++) {
+      const cx = pts[i][0] * W;
+      const cy = pts[i][1] * H;
+      const mx = ((pts[i][0] + pts[i + 1][0]) / 2) * W;
+      const my = ((pts[i][1] + pts[i + 1][1]) / 2) * H;
+      ctx.quadraticCurveTo(cx, cy, mx, my);
+    }
+    const last = pts[pts.length - 1];
+    ctx.lineTo(last[0] * W, last[1] * H);
+  }
+  ctx.stroke();
+  ctx.restore();
 }
 
 function roundedRect(ctx, x, y, w, h, r) {
