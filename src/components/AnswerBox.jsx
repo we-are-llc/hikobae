@@ -162,7 +162,8 @@ export default function AnswerBox({
     },
   };
 
-  const c = colors[mode];
+  // 「かく」モードなど place/answer 以外では回答モード相当の見た目で表示（操作は無効）
+  const c = colors[mode] || colors.answer;
 
   return (
     <div
