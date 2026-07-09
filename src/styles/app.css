@@ -650,57 +650,87 @@ button:disabled {
   pointer-events: none;
 }
 
-/* 描画ツール（左中央・半透明） */
-.draw-tools {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
+/* 描画ツールバー（描くモード・フッターの上に横並び） */
+.draw-toolbar {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 5px;
-  background: rgba(30, 30, 30, 0.32);
-  border-radius: 22px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(3px);
-  z-index: 20;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
-.draw-tools .draw-w {
-  width: 40px;
-  height: 40px;
-  min-height: 40px;
+.draw-toolbar .dt-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dt-color {
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
   padding: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.7);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.dt-color.active {
+  box-shadow: 0 0 0 2px #1e293b;
+  transform: scale(1.12);
+}
+
+.dt-width {
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.draw-tools .draw-w span {
+.dt-width span {
   display: block;
-  background: #2563EB;
   border-radius: 50%;
 }
 
-.draw-tools .draw-w.active {
+.dt-width.active {
+  border-color: #1e293b;
   background: #fff;
-  box-shadow: 0 0 0 2px #2563EB;
 }
 
-.draw-tools .draw-clear {
-  width: 40px;
-  height: 40px;
-  min-height: 40px;
-  padding: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.7);
-  color: #1a1a1a;
-  font-size: 12px;
+.dt-eraser,
+.dt-clear {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 700;
+  border: 1.5px solid var(--border);
+}
+
+.dt-eraser {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.dt-eraser.active {
+  background: #1e293b;
+  color: #fff;
+  border-color: #1e293b;
+}
+
+.dt-clear {
+  background: var(--bg);
+  color: var(--danger);
 }
 
 .answer-footer {

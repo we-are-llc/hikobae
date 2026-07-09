@@ -91,6 +91,7 @@ export default function About({ onNavigate }) {
               <div className="about-changelog-date">2026-07-09</div>
               <ul className="about-changelog-list">
                 <li>フリーハンドで手書き・作図ができる「かく」モードを追加（指・スタイラス対応、太さ3段階、PDFにも反映）</li>
+                <li>手書きに色パレット（5色）と消しゴム（線ごとに消せる）を追加</li>
                 <li>「ぜんぶこたえた」の演出を「こたえる」モードのときだけ出すように変更</li>
                 <li>きりとり画面・かいとう画面のズームを2本指ピンチ操作に対応</li>
                 <li>入力欄の作成時に、入力欄の背景と番号を透明化して背景の問題用紙を読みやすく改善</li>

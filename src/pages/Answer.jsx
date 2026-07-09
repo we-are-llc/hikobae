@@ -17,8 +17,8 @@ const ZOOM_MIN = 1;
 const ZOOM_MAX = 3;
 const ZOOM_STEP = 0.5;
 
-// フリーハンド：色は1色、太さは3段階（画像幅の1/1000を1単位）
-const DRAW_COLOR = '#2563EB';
+// フリーハンド：色パレット・太さ3段階（画像幅の1/1000を1単位）
+const DRAW_COLORS = ['#2563EB', '#EF4444', '#16A34A', '#F59E0B', '#1F2937'];
 const DRAW_WIDTHS = [
   { id: 'thin', w: 6, dot: 8 },
   { id: 'medium', w: 10, dot: 12 },
@@ -28,6 +28,8 @@ const DRAW_WIDTHS = [
 const VBW = 1000;
 // 描画中に点を間引く最小移動量（割合）
 const MIN_POINT_DIST = 0.0025;
+// 消しゴムの判定半径（画像幅に対する割合）
+const ERASE_RADIUS = 0.022;
 
 export default function Answer({ session, onNavigate, onUpdate }) {
   const [mode, setMode] = useState('place');
@@ -39,6 +41,8 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [history, setHistory] = useState([]);
   const [drawWidth, setDrawWidth] = useState(10);
+  const [drawColor, setDrawColor] = useState(DRAW_COLORS[0]);
+  const [eraserOn, setEraserOn] = useState(false);
   const [imgAspect, setImgAspect] = useState(1.414); // 高さ/幅。画像読み込み時に更新
   const overlayRef = useRef(null);
   const scrollRef = useRef(null);
@@ -225,6 +229,14 @@ export default function Answer({ session, onNavigate, onUpdate }) {
     }
   }, [imgAspect]);
 
+  // 消しゴム：指定位置に近い点を持つストロークを削除
+  const eraseAt = useCallback((x, y) => {
+    const cur = sessionRef.current.pages[pageIndex]?.strokes ?? [];
+    const hit = (s) => s.points.some((pt) => Math.hypot(pt[0] - x, pt[1] - y) < ERASE_RADIUS);
+    if (!cur.some(hit)) return; // 消すものが無ければ何もしない
+    updateSession((p) => ({ strokes: (p.strokes ?? []).filter((s) => !hit(s)) }));
+  }, [pageIndex, updateSession]);
+
   const handleDrawPointerDown = useCallback((e) => {
     if (mode !== 'draw') return;
     if (e.pointerType === 'touch') {
@@ -239,20 +251,27 @@ export default function Answer({ session, onNavigate, onUpdate }) {
     }
     pinchingRef.current = false;
     const { x, y } = toFrac(e.clientX, e.clientY);
-    drawingRef.current = { points: [[x, y]], pointerId: e.pointerId };
     try { overlayRef.current.setPointerCapture?.(e.pointerId); } catch { /* noop */ }
+
+    if (eraserOn) {
+      drawingRef.current = { erasing: true, pointerId: e.pointerId };
+      eraseAt(x, y);
+      return;
+    }
+    drawingRef.current = { points: [[x, y]], pointerId: e.pointerId };
     setLivePath(drawingRef.current.points);
-  }, [mode, toFrac, setLivePath]);
+  }, [mode, toFrac, setLivePath, eraserOn, eraseAt]);
 
   const handleDrawPointerMove = useCallback((e) => {
     const d = drawingRef.current;
     if (!d || pinchingRef.current || e.pointerId !== d.pointerId) return;
     const { x, y } = toFrac(e.clientX, e.clientY);
+    if (d.erasing) { eraseAt(x, y); return; }
     const last = d.points[d.points.length - 1];
     if (Math.hypot(x - last[0], y - last[1]) < MIN_POINT_DIST) return;
     d.points.push([x, y]);
     setLivePath(d.points);
-  }, [toFrac, setLivePath]);
+  }, [toFrac, setLivePath, eraseAt]);
 
   const handleDrawPointerUp = useCallback((e) => {
     if (e.pointerType === 'touch') {
@@ -262,12 +281,13 @@ export default function Answer({ session, onNavigate, onUpdate }) {
     const d = drawingRef.current;
     if (!d || e.pointerId !== d.pointerId) return;
     drawingRef.current = null;
+    if (d.erasing) return;
     setLivePath([]); // ライブ表示をクリア
     if (d.points.length >= 1) {
-      const stroke = { id: generateId(), color: DRAW_COLOR, width: drawWidth, points: d.points };
+      const stroke = { id: generateId(), color: drawColor, width: drawWidth, points: d.points };
       updateSession((p) => ({ strokes: [...(p.strokes ?? []), stroke] }));
     }
-  }, [drawWidth, updateSession, setLivePath]);
+  }, [drawWidth, drawColor, updateSession, setLivePath]);
 
   const handleClearStrokes = useCallback(() => {
     updateSession(() => ({ strokes: [] }));
@@ -375,7 +395,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
             {/* 描画中のライブパス（d は ref で命令的に更新し、再描画で消えないようにする） */}
             <path
               ref={liveRef}
-              stroke={DRAW_COLOR}
+              stroke={drawColor}
               strokeWidth={drawWidth}
               fill="none"
               strokeLinecap="round"
@@ -430,26 +450,46 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         </button>
       </div>
 
-      {/* Draw tools（描くモードのみ表示） */}
+      {/* Draw toolbar（描くモードのみ表示・フッターの上） */}
       {mode === 'draw' && (
-        <div className="draw-tools">
-          {DRAW_WIDTHS.map((w) => (
-            <button
-              key={w.id}
-              className={`draw-w${drawWidth === w.w ? ' active' : ''}`}
-              onClick={() => setDrawWidth(w.w)}
-              aria-label={`太さ ${w.id}`}
-            >
-              <span style={{ width: w.dot, height: w.dot }} />
-            </button>
-          ))}
+        <div className="draw-toolbar">
+          <div className="dt-group dt-colors">
+            {DRAW_COLORS.map((c) => (
+              <button
+                key={c}
+                className={`dt-color${drawColor === c && !eraserOn ? ' active' : ''}`}
+                style={{ background: c }}
+                onClick={() => { setDrawColor(c); setEraserOn(false); }}
+                aria-label={`色 ${c}`}
+              />
+            ))}
+          </div>
+          <div className="dt-group dt-widths">
+            {DRAW_WIDTHS.map((w) => (
+              <button
+                key={w.id}
+                className={`dt-width${drawWidth === w.w && !eraserOn ? ' active' : ''}`}
+                onClick={() => { setDrawWidth(w.w); setEraserOn(false); }}
+                aria-label={`太さ ${w.id}`}
+              >
+                <span style={{ width: w.dot, height: w.dot, background: drawColor }} />
+              </button>
+            ))}
+          </div>
           <button
-            className="draw-clear"
+            className={`dt-eraser${eraserOn ? ' active' : ''}`}
+            onClick={() => setEraserOn((v) => !v)}
+            aria-label="消しゴム"
+          >
+            けしゴム
+          </button>
+          <button
+            className="dt-clear"
             onClick={handleClearStrokes}
             disabled={strokes.length === 0}
             aria-label="かいたものを全部けす"
           >
-            けす
+            ぜんぶけす
           </button>
         </div>
       )}
