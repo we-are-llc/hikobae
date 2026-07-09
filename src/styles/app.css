@@ -611,6 +611,8 @@ button:disabled {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   background: #e8e6e0;
+  /* 1本指のパンはネイティブ、2本指ピンチは JS で処理する */
+  touch-action: pan-x pan-y;
 }
 
 .answer-image-container {
@@ -1447,6 +1449,8 @@ button:disabled {
   background: #1c1c1c;
   /* スマホのスワイプ領域（戻るジェスチャー等）とハンドルが被らないよう余白を確保 */
   padding: 8px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
+  /* 1本指のパンはネイティブ、2本指ピンチは JS で処理する */
+  touch-action: pan-x pan-y;
 }
 
 .crop-container {

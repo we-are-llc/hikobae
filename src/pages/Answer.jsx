@@ -3,6 +3,7 @@ import ModeBar from '../components/ModeBar.jsx';
 import AnswerBox from '../components/AnswerBox.jsx';
 import VoiceModal from '../components/VoiceModal.jsx';
 import { saveSession } from '../utils/db.js';
+import { usePinchZoom } from '../hooks/usePinchZoom.js';
 
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -10,7 +11,9 @@ function generateId() {
 
 const DEFAULT_BOX_W = 0.24;
 const DEFAULT_BOX_H = 0.065;
-const ZOOM_LEVELS = [1, 1.5, 2, 3];
+const ZOOM_MIN = 1;
+const ZOOM_MAX = 3;
+const ZOOM_STEP = 0.5;
 
 export default function Answer({ session, onNavigate, onUpdate }) {
   const [mode, setMode] = useState('place');
@@ -22,6 +25,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [history, setHistory] = useState([]);
   const overlayRef = useRef(null);
+  const scrollRef = useRef(null);
   const saveTimerRef = useRef(null);
   const sessionRef = useRef(session);
   const prevAnsweredRef = useRef(0);
@@ -78,11 +82,13 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   }, [pageIndex]);
 
   const zoomIn = useCallback(() => {
-    setZoom((z) => ZOOM_LEVELS[Math.min(ZOOM_LEVELS.indexOf(z) + 1, ZOOM_LEVELS.length - 1)]);
+    setZoom((z) => Math.min(ZOOM_MAX, Math.round((z + ZOOM_STEP) * 100) / 100));
   }, []);
   const zoomOut = useCallback(() => {
-    setZoom((z) => ZOOM_LEVELS[Math.max(ZOOM_LEVELS.indexOf(z) - 1, 0)]);
+    setZoom((z) => Math.max(ZOOM_MIN, Math.round((z - ZOOM_STEP) * 100) / 100));
   }, []);
+
+  usePinchZoom(scrollRef, zoom, setZoom, { min: ZOOM_MIN, max: ZOOM_MAX });
 
   const handleUndo = useCallback(() => {
     setHistory((prev) => {
@@ -236,7 +242,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
       </div>
 
       {/* Scrollable image area */}
-      <div className="answer-scroll">
+      <div className="answer-scroll" ref={scrollRef}>
         <div className="answer-image-container" style={{ width: `${zoom * 100}%` }}>
           <img
             src={currentPage?.imageData}
@@ -270,13 +276,13 @@ export default function Answer({ session, onNavigate, onUpdate }) {
         </div>
       </div>
 
-      {/* Zoom controls */}
+      {/* Zoom controls（2本指ピンチでもズーム可。ボタンはデスクトップ等の補助） */}
       <div className="zoom-controls">
-        <button onClick={zoomIn} disabled={zoom >= ZOOM_LEVELS[ZOOM_LEVELS.length - 1]} aria-label="拡大">
+        <button onClick={zoomIn} disabled={zoom >= ZOOM_MAX} aria-label="拡大">
           ＋
         </button>
         <span className="zoom-controls-label">{Math.round(zoom * 100)}%</span>
-        <button onClick={zoomOut} disabled={zoom <= ZOOM_LEVELS[0]} aria-label="縮小">
+        <button onClick={zoomOut} disabled={zoom <= ZOOM_MIN} aria-label="縮小">
           －
         </button>
       </div>

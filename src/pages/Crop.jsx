@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { warpPerspective } from '../utils/perspective.js';
 import { saveSession } from '../utils/db.js';
 import { detectDocumentCorners } from '../utils/detectEdges.js';
+import { usePinchZoom } from '../hooks/usePinchZoom.js';
 import {
   applyAdjustments,
   downscale,
@@ -12,7 +13,9 @@ import {
 
 const COLORS = { tl: '#3B82F6', tr: '#10B981', br: '#F59E0B', bl: '#EF4444' };
 const LABELS = { tl: '左上', tr: '右上', br: '右下', bl: '左下' };
-const ZOOM_LEVELS = [1, 1.5, 2, 3];
+const ZOOM_MIN = 1;
+const ZOOM_MAX = 3;
+const ZOOM_STEP = 0.5;
 const DEFAULT_PRESET = 'text';
 
 function initCorners() {
@@ -43,6 +46,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
   const [showFine, setShowFine] = useState(false);
   const imgRef = useRef(null);
   const containerRef = useRef(null);
+  const scrollRef = useRef(null);
   const warpedRef = useRef(null);       // 原寸のワープ結果（調整のたびに再ワープしない）
   const previewBaseRef = useRef(null);  // プレビュー用に縮小したワープ結果
   const previewCanvasRef = useRef(null);
@@ -58,11 +62,13 @@ export default function Crop({ name, rawPages, onNavigate }) {
   }, [pageIdx]);
 
   const zoomIn = useCallback(() => {
-    setZoom((z) => ZOOM_LEVELS[Math.min(ZOOM_LEVELS.indexOf(z) + 1, ZOOM_LEVELS.length - 1)]);
+    setZoom((z) => Math.min(ZOOM_MAX, Math.round((z + ZOOM_STEP) * 100) / 100));
   }, []);
   const zoomOut = useCallback(() => {
-    setZoom((z) => ZOOM_LEVELS[Math.max(ZOOM_LEVELS.indexOf(z) - 1, 0)]);
+    setZoom((z) => Math.max(ZOOM_MIN, Math.round((z - ZOOM_STEP) * 100) / 100));
   }, []);
+
+  usePinchZoom(scrollRef, zoom, setZoom, { min: ZOOM_MIN, max: ZOOM_MAX });
 
   const toFrac = useCallback((clientX, clientY) => {
     const rect = containerRef.current.getBoundingClientRect();
@@ -320,7 +326,7 @@ export default function Crop({ name, rawPages, onNavigate }) {
         </div>
       </div>
 
-      <div className="crop-scroll">
+      <div className="crop-scroll" ref={scrollRef}>
         <div ref={containerRef} className="crop-container" style={{ width: `${zoom * 100}%` }}>
           <img
             ref={imgRef}
@@ -374,11 +380,11 @@ export default function Crop({ name, rawPages, onNavigate }) {
 
       {imgLoaded && (
         <div className="zoom-controls">
-          <button onClick={zoomIn} disabled={zoom >= ZOOM_LEVELS[ZOOM_LEVELS.length - 1]} aria-label="拡大">
+          <button onClick={zoomIn} disabled={zoom >= ZOOM_MAX} aria-label="拡大">
             ＋
           </button>
           <span className="zoom-controls-label">{Math.round(zoom * 100)}%</span>
-          <button onClick={zoomOut} disabled={zoom <= ZOOM_LEVELS[0]} aria-label="縮小">
+          <button onClick={zoomOut} disabled={zoom <= ZOOM_MIN} aria-label="縮小">
             －
           </button>
         </div>
