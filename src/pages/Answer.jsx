@@ -479,9 +479,9 @@ export default function Answer({ session, onNavigate, onUpdate }) {
           <button
             className={`dt-eraser${eraserOn ? ' active' : ''}`}
             onClick={() => setEraserOn((v) => !v)}
-            aria-label="消しゴム"
+            aria-label="なぞった線を消す"
           >
-            けしゴム
+            けす
           </button>
           <button
             className="dt-clear"
