@@ -283,13 +283,21 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   const totalStrokes = session.pages.reduce((acc, p) => acc + (p.strokes?.length ?? 0), 0);
 
   useEffect(() => {
-    if (totalBoxes > 0 && totalAnswered === totalBoxes && prevAnsweredRef.current < totalBoxes) {
+    // 「ぜんぶこたえた」演出は「こたえる」モードのときだけ出す
+    // （つくるモードでの回答途中に出てしまうのを防ぐ）
+    if (
+      mode === 'answer' &&
+      totalBoxes > 0 &&
+      totalAnswered === totalBoxes &&
+      prevAnsweredRef.current < totalBoxes
+    ) {
       setShowCelebration(true);
       const t = setTimeout(() => setShowCelebration(false), 2500);
+      prevAnsweredRef.current = totalAnswered;
       return () => clearTimeout(t);
     }
     prevAnsweredRef.current = totalAnswered;
-  }, [totalAnswered, totalBoxes]);
+  }, [totalAnswered, totalBoxes, mode]);
 
   return (
     <div className="answer-page">
