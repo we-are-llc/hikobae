@@ -156,9 +156,9 @@ export default function AnswerBox({
       cursor: 'move',
     },
     answer: {
-      // 回答モードは入力文字を読みやすくするため塗りを残す
+      // 未入力欄は背景の問題用紙が読めるよう塗りをかなり薄く（枠線で位置は分かる）
       border: `2px solid ${box.text ? palette.main : '#94A3B8'}`,
-      background: box.text ? palette.bg : 'rgba(255,255,255,0.75)',
+      background: box.text ? palette.bg : 'rgba(255,255,255,0.28)',
       cursor: 'pointer',
     },
   };
