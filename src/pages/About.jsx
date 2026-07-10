@@ -88,9 +88,14 @@ export default function About({ onNavigate }) {
           <h2>更新履歴</h2>
           <div className="about-changelog">
             <div className="about-changelog-entry">
-              <div className="about-changelog-date">2026-07-09</div>
+              <div className="about-changelog-date">2026-07-10</div>
               <ul className="about-changelog-list">
                 <li>写真を使わず白紙（ホワイトボード・A4縦）から手書きを始められるモードを追加</li>
+              </ul>
+            </div>
+            <div className="about-changelog-entry">
+              <div className="about-changelog-date">2026-07-09</div>
+              <ul className="about-changelog-list">
                 <li>フリーハンドで手書き・作図ができる「かく」モードを追加（指・スタイラス対応、太さ3段階、PDFにも反映）</li>
                 <li>手書きに色パレット（5色）と消しゴム（線ごとに消せる）を追加</li>
                 <li>回答欄がある状態で「かく」に切り替えると画面が真っ白になる不具合を修正</li>
