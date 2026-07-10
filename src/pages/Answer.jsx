@@ -35,7 +35,8 @@ const MIN_POINT_DIST = 0.0025;
 const ERASE_RADIUS = 0.022;
 
 export default function Answer({ session, onNavigate, onUpdate }) {
-  const [mode, setMode] = useState('place');
+  // ホワイトボード（白紙）は手書き用途が主なので最初から「かく」モードで開く
+  const [mode, setMode] = useState(session.whiteboard ? 'draw' : 'place');
   const [pageIndex, setPageIndex] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [selectedBoxId, setSelectedBoxId] = useState(null);

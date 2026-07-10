@@ -1,5 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
-import { loadSessions, deleteSession } from '../utils/db.js';
+import { loadSessions, deleteSession, saveSession } from '../utils/db.js';
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+// A4縦（1:1.414）相当の白紙画像を生成
+function makeBlankA4() {
+  const W = 2000;
+  const H = Math.round(W * 1.414); // 2828
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+  return canvas.toDataURL('image/png');
+}
 
 export default function Home({ onNavigate }) {
   const [sessions, setSessions] = useState([]);
@@ -27,6 +44,20 @@ export default function Home({ onNavigate }) {
     [onNavigate]
   );
 
+  // 写真を使わず、白紙（ホワイトボード）ではじめる
+  const handleWhiteboard = useCallback(() => {
+    const session = {
+      id: genId(),
+      name: 'ホワイトボード',
+      whiteboard: true,
+      pages: [{ imageData: makeBlankA4(), boxes: [], strokes: [] }],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    saveSession(session).catch(console.error);
+    onNavigate('answer', session);
+  }, [onNavigate]);
+
   const formatDate = (ts) => {
     if (!ts) return '';
     return new Date(ts).toLocaleDateString('ja-JP', {
@@ -47,6 +78,9 @@ export default function Home({ onNavigate }) {
       <div className="home-buttons">
         <button className="home-btn-new" onClick={() => onNavigate('import')}>
           あたらしく とりこむ
+        </button>
+        <button className="home-btn-whiteboard" onClick={handleWhiteboard}>
+          🖊 白紙(ホワイトボード)ではじめる
         </button>
         <button
           className="home-btn-continue"

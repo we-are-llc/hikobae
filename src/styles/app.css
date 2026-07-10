@@ -157,6 +157,15 @@ button:disabled {
   border-radius: var(--radius);
 }
 
+.home-btn-whiteboard {
+  background: var(--surface);
+  color: var(--text);
+  border: 2px dashed var(--border);
+  font-size: 15px;
+  min-height: 48px;
+  border-radius: var(--radius);
+}
+
 .home-btn-continue {
   background: var(--surface);
   color: var(--text);
