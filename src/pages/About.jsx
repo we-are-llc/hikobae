@@ -91,6 +91,7 @@ export default function About({ onNavigate }) {
               <div className="about-changelog-date">2026-07-10</div>
               <ul className="about-changelog-list">
                 <li>写真を使わず白紙（ホワイトボード・A4縦）から手書きを始められるモードを追加</li>
+                <li>かいとう画面のタイトルをタップして保存名をいつでも変更できるように</li>
               </ul>
             </div>
             <div className="about-changelog-entry">

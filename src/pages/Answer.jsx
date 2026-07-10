@@ -47,6 +47,7 @@ export default function Answer({ session, onNavigate, onUpdate }) {
   const [drawWidth, setDrawWidth] = useState(10);
   const [drawColor, setDrawColor] = useState(DRAW_COLORS[0]);
   const [eraserOn, setEraserOn] = useState(false);
+  const [editingName, setEditingName] = useState(false);
   const [imgAspect, setImgAspect] = useState(1.414); // 高さ/幅。画像読み込み時に更新
   // 表示中の画像幅 ÷ SCREEN_REF_W。回答欄の文字サイズを画面表示に合わせPDFと揃える
   const [fontScale, setFontScale] = useState(1);
@@ -234,6 +235,20 @@ export default function Answer({ session, onNavigate, onUpdate }) {
     setSelectedBoxId(null);
   }, []);
 
+  // 保存名の変更（いつでも・全セッション共通）
+  const commitName = useCallback((value) => {
+    setEditingName(false);
+    const name = (value || '').trim();
+    if (!name || name === sessionRef.current.name) return;
+    onUpdate((s) => ({ ...s, name, updatedAt: Date.now() }));
+    clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(async () => {
+      setSaving(true);
+      await saveSession(sessionRef.current).catch(console.error);
+      setSaving(false);
+    }, 300);
+  }, [onUpdate]);
+
   // ---- フリーハンド描画 ----
   const toFrac = useCallback((clientX, clientY) => {
     const rect = overlayRef.current.getBoundingClientRect();
@@ -351,7 +366,29 @@ export default function Answer({ session, onNavigate, onUpdate }) {
           >
             ← ホーム
           </button>
-          <div className="answer-header-title">{session.name}</div>
+          {editingName ? (
+            <input
+              className="answer-name-input"
+              defaultValue={session.name}
+              autoFocus
+              maxLength={40}
+              onFocus={(e) => e.target.select()}
+              onBlur={(e) => commitName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') e.target.blur();
+                else if (e.key === 'Escape') setEditingName(false);
+              }}
+            />
+          ) : (
+            <button
+              className="answer-header-title answer-name-btn"
+              onClick={() => setEditingName(true)}
+              title="名前を変更"
+            >
+              <span className="answer-name-text">{session.name}</span>
+              <span className="answer-name-edit" aria-hidden="true">✎</span>
+            </button>
+          )}
           {session.pages.length > 1 && (
             <div className="page-nav">
               <button
